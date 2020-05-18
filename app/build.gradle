@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'androidx.navigation.safeargs'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -43,7 +44,7 @@ dependencies {
     implementation 'com.spotify.mobius:mobius-core:1.4.0'
     implementation 'com.spotify.mobius:mobius-rx2:1.4.0'
     implementation 'com.spotify.mobius:mobius-android:1.4.0'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
@@ -53,5 +54,20 @@ dependencies {
     implementation 'com.spotify.mobius:mobius-rx2:1.4.0'      // only for RxJava 2 support
     implementation 'com.spotify.mobius:mobius-android:1.4.0'  // only for Android support
     implementation 'com.spotify.mobius:mobius-extras:1.2.0'   // utilities for common patterns
+
+    implementation 'com.google.dagger:dagger-android-support:2.22.1'
+    implementation 'com.google.dagger:dagger:2.24'
+    kapt 'com.google.dagger:dagger-compiler:2.22.1'
+    kapt 'com.google.dagger:dagger-android-processor:2.22.1'
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.2'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
 
 }
