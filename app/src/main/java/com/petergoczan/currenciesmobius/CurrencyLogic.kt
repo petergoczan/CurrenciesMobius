@@ -5,6 +5,7 @@ import com.petergoczan.currenciesmobius.CurrencyEvent.*
 import com.spotify.mobius.Next
 import com.spotify.mobius.Next.dispatch
 import com.spotify.mobius.Next.next
+import java.io.Serializable
 
 data class CurrencyModel(
     val isOnline: Boolean = true,
@@ -16,9 +17,12 @@ data class CurrencyModel(
 data class RemoteCurrenciesModel(
     val baseCurrency: String = DEFAULT_CURRENCY_CODE,
     val currencyItems: List<CurrencyItem> = listOf()
-)
+) : Serializable
 
-data class CurrencyItem(val code: String = "", val multiplierForBaseCurrency: Double = 0.0)
+data class CurrencyItem(
+    val code: String = "",
+    val multiplierForBaseCurrency: Double = 0.0
+) : Serializable
 
 sealed class CurrencyEvent {
     data class InternetStateChanged(val isConnected: Boolean) : CurrencyEvent()
