@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:gravity="start"
         android:text="@string/title"
-        android:textSize="@dimen/title_text_size" />
+        android:textSize="@dimen/text_size_medium" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
