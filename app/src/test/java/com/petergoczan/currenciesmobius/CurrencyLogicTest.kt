@@ -65,7 +65,7 @@ class CurrencyLogicTest {
     @Test
     fun updateSelectedItem_whenRowSelected() {
         val model = CurrencyModel()
-        val selectedItem = CurrencyItem("test", 27.toDouble())
+        val selectedItem = CurrencyItem("test", "test", "test", 1234F, 27.toDouble())
         updateSpec
             .given(model)
             .whenEvent(RowSelected(selectedItem))
@@ -108,7 +108,7 @@ class CurrencyLogicTest {
 
     @Test
     fun requestDataWithCurrentSelection_whenRefreshTimePassed() {
-        val selectedItem = CurrencyItem("test", 27.toDouble())
+        val selectedItem = CurrencyItem("test", "test", "test", 2654F, 27.toDouble())
         val model = CurrencyModel(selectedItem = selectedItem)
         updateSpec
             .given(model)

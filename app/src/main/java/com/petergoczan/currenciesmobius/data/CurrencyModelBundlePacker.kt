@@ -36,7 +36,7 @@ private fun modelFromBundle(bundle: Bundle) =
         bundle.getBoolean(IS_ONLINE),
         bundle.getSerializable(SELECTED_ITEM) as CurrencyItem?,
         bundle.getInt(AMOUNT_SET_BY_USER),
-        bundle.getSerializable(REMOTE_MODEL) as RemoteCurrenciesModel?
+        bundle.getSerializable(REMOTE_MODEL) as RemoteCurrenciesModel
         )
 
 private fun hasSavedModel(savedInstanceState: Bundle?): Boolean =

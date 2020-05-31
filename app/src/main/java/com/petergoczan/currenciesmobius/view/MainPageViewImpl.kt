@@ -3,11 +3,12 @@ package com.petergoczan.currenciesmobius.view
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.petergoczan.currenciesmobius.di.ApplicationScope
+import com.petergoczan.currenciesmobius.di.ActivityScope
+import com.petergoczan.currenciesmobius.view.list.MainPageListAdapter
 import kotlinx.android.synthetic.main.activity_main.view.*
 import javax.inject.Inject
 
-@ApplicationScope
+@ActivityScope
 class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdapter) :
     MainPageView {
 
@@ -20,5 +21,4 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
     }
-
 }

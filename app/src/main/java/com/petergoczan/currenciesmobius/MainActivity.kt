@@ -1,23 +1,21 @@
 package com.petergoczan.currenciesmobius
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.petergoczan.currenciesmobius.data.resolveDefaultModel
 import com.petergoczan.currenciesmobius.data.saveModel
+import com.petergoczan.currenciesmobius.presentation.MainPagePresenter
 import com.petergoczan.currenciesmobius.view.MainPageView
 import com.spotify.mobius.MobiusLoop
-import com.spotify.mobius.Update
-import com.spotify.mobius.android.AndroidLogger
-import com.spotify.mobius.android.MobiusAndroid
-import com.spotify.mobius.rx2.RxMobius
-import io.reactivex.ObservableTransformer
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var view: MainPageView
+    @Inject
+    lateinit var presenter: MainPagePresenter
 
     private lateinit var controller: MobiusLoop.Controller<CurrencyModel, CurrencyEvent>
 
@@ -25,11 +23,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         view.bind(root)
-        controller = createController(
+        controller = presenter.createController(
             createEffectHandlers(),
             resolveDefaultModel(savedInstanceState)
         )
-        //TODO connect controller
+        presenter.onViewAvailable(view)
+        presenter.onModelUpdated(controller.model)
+        controller.connect(presenter)
     }
 
     override fun onResume() {
@@ -50,24 +50,5 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         saveModel(controller.model, outState)
-    }
-
-    private fun createController(
-        effectHandlers: ObservableTransformer<CurrencyEffect, CurrencyEvent>,
-        defaultModel: CurrencyModel
-    ): MobiusLoop.Controller<CurrencyModel, CurrencyEvent> {
-        return MobiusAndroid.controller(
-            createLoop(effectHandlers), defaultModel
-        )
-    }
-
-    private fun createLoop(effectHandlers: ObservableTransformer<CurrencyEffect, CurrencyEvent>): MobiusLoop.Factory<CurrencyModel, CurrencyEvent, CurrencyEffect> {
-        return RxMobius.loop(Update<CurrencyModel, CurrencyEvent, CurrencyEffect> { model: CurrencyModel, event: CurrencyEvent ->
-            update(
-                model,
-                event
-            )
-        }, effectHandlers)
-            .logger(AndroidLogger.tag("MainActivity loop"))
     }
 }

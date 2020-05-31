@@ -11,7 +11,7 @@ data class CurrencyModel(
     val isOnline: Boolean = true,
     val selectedItem: CurrencyItem? = null,
     val amountSetByUser: Int = 0,
-    val remoteModel: RemoteCurrenciesModel? = null
+    val remoteModel: RemoteCurrenciesModel = RemoteCurrenciesModel()
 )
 
 data class RemoteCurrenciesModel(
@@ -20,7 +20,10 @@ data class RemoteCurrenciesModel(
 ) : Serializable
 
 data class CurrencyItem(
+    val imageUrl: String = "",
     val code: String = "",
+    val name: String = "",
+    val amount: Float = 0.0F,
     val multiplierForBaseCurrency: Double = 0.0
 ) : Serializable
 
@@ -49,7 +52,7 @@ fun update(
     when (event) {
         is InternetStateChanged -> next(
             model.copy(isOnline = event.isConnected),
-            setOf(if(event.isConnected) HideNoInternetPage else ShowNoInternetPage)
+            setOf(if (event.isConnected) HideNoInternetPage else ShowNoInternetPage)
         )
         is RowSelected -> next(
             model.copy(selectedItem = event.selectedItem),
