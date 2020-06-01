@@ -1,7 +1,8 @@
 package com.petergoczan.currenciesmobius
 
-import com.petergoczan.currenciesmobius.CurrencyEffect.*
-import com.petergoczan.currenciesmobius.CurrencyEvent.*
+import com.petergoczan.currenciesmobius.mobius.*
+import com.petergoczan.currenciesmobius.mobius.CurrencyEffect.*
+import com.petergoczan.currenciesmobius.mobius.CurrencyEvent.*
 import com.spotify.mobius.test.NextMatchers.hasEffects
 import com.spotify.mobius.test.NextMatchers.hasModel
 import com.spotify.mobius.test.UpdateSpec
@@ -20,7 +21,8 @@ class CurrencyLogicTest {
 
     @Test
     fun updateOnline_whenInternetStateChangedToAvailable() {
-        val model = CurrencyModel(isOnline = false)
+        val model =
+            CurrencyModel(isOnline = false)
         updateSpec
             .given(model)
             .whenEvent(InternetStateChanged(true))
@@ -29,7 +31,8 @@ class CurrencyLogicTest {
 
     @Test
     fun updateOnline_whenInternetStateChangedToUnavailable() {
-        val model = CurrencyModel(isOnline = true)
+        val model =
+            CurrencyModel(isOnline = true)
         updateSpec
             .given(model)
             .whenEvent(InternetStateChanged(false))
@@ -38,7 +41,8 @@ class CurrencyLogicTest {
 
     @Test
     fun showNoInternetPage_whenInternetStateChangedToUnavailable() {
-        val model = CurrencyModel(isOnline = true)
+        val model =
+            CurrencyModel(isOnline = true)
         updateSpec
             .given(model)
             .whenEvent(InternetStateChanged(false))
@@ -51,7 +55,8 @@ class CurrencyLogicTest {
 
     @Test
     fun hideNoInternetPage_whenInternetStateChangedToAvailable() {
-        val model = CurrencyModel(isOnline = false)
+        val model =
+            CurrencyModel(isOnline = false)
         updateSpec
             .given(model)
             .whenEvent(InternetStateChanged(true))
@@ -65,7 +70,13 @@ class CurrencyLogicTest {
     @Test
     fun updateSelectedItem_whenRowSelected() {
         val model = CurrencyModel()
-        val selectedItem = CurrencyItem("test", "test", "test", 1234F, 27.toDouble())
+        val selectedItem = CurrencyListItem(
+            "test",
+            "test",
+            "test",
+            1234F,
+            27.toDouble()
+        )
         updateSpec
             .given(model)
             .whenEvent(RowSelected(selectedItem))
@@ -74,7 +85,7 @@ class CurrencyLogicTest {
 
     @Test
     fun moveItemOnTop_whenRowSelected() {
-        val selectedItem = CurrencyItem()
+        val selectedItem = CurrencyListItem()
         updateSpec
             .given(CurrencyModel())
             .whenEvent(RowSelected(selectedItem))
@@ -108,8 +119,15 @@ class CurrencyLogicTest {
 
     @Test
     fun requestDataWithCurrentSelection_whenRefreshTimePassed() {
-        val selectedItem = CurrencyItem("test", "test", "test", 2654F, 27.toDouble())
-        val model = CurrencyModel(selectedItem = selectedItem)
+        val selectedItem = CurrencyListItem(
+            "test",
+            "test",
+            "test",
+            2654F,
+            27.toDouble()
+        )
+        val model =
+            CurrencyModel(selectedItem = selectedItem)
         updateSpec
             .given(model)
             .whenEvent(RefreshTimePassed)
@@ -122,9 +140,12 @@ class CurrencyLogicTest {
 
     @Test
     fun updateRemoteModel_whenDataArrived() {
-        val remoteModelOriginal = RemoteCurrenciesModel()
-        val remoteModelNew = RemoteCurrenciesModel()
-        val model = CurrencyModel(remoteModel = remoteModelOriginal)
+        val remoteModelOriginal =
+            RemoteCurrenciesModel()
+        val remoteModelNew =
+            RemoteCurrenciesModel()
+        val model =
+            CurrencyModel(remoteModel = remoteModelOriginal)
         updateSpec
             .given(model)
             .whenEvent(DataArrived(remoteModelNew))
@@ -140,6 +161,43 @@ class CurrencyLogicTest {
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
                     hasEffects(UpdateListItems)
+                )
+            )
+    }
+
+    @Test
+    fun showErrorPage_whenCommunicationError() {
+        val model = CurrencyModel()
+        updateSpec
+            .given(model)
+            .whenEvent(CommunicationError)
+            .then(
+                assertThatNext<CurrencyModel, CurrencyEffect>(
+                    hasEffects(ShowCommunicationErrorPage)
+                )
+            )
+    }
+
+    @Test
+    fun startTimer_whenAppResumed() {
+        updateSpec
+            .given(CurrencyModel())
+            .whenEvent(AppResumed)
+            .then(
+                assertThatNext<CurrencyModel, CurrencyEffect>(
+                    hasEffects(StartTimer)
+                )
+            )
+    }
+
+    @Test
+    fun stopTimer_whenAppPaused() {
+        updateSpec
+            .given(CurrencyModel())
+            .whenEvent(AppPaused)
+            .then(
+                assertThatNext<CurrencyModel, CurrencyEffect>(
+                    hasEffects(StopTimer)
                 )
             )
     }

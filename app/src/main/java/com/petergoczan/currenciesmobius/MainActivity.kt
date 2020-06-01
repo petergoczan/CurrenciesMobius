@@ -3,6 +3,8 @@ package com.petergoczan.currenciesmobius
 import android.os.Bundle
 import com.petergoczan.currenciesmobius.data.resolveDefaultModel
 import com.petergoczan.currenciesmobius.data.saveModel
+import com.petergoczan.currenciesmobius.mobius.CurrencyEvent
+import com.petergoczan.currenciesmobius.mobius.CurrencyModel
 import com.petergoczan.currenciesmobius.presentation.MainPagePresenter
 import com.petergoczan.currenciesmobius.view.MainPageView
 import com.spotify.mobius.MobiusLoop
@@ -23,13 +25,8 @@ class MainActivity : DaggerAppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         view.bind(root)
-        controller = presenter.createController(
-            createEffectHandlers(),
-            resolveDefaultModel(savedInstanceState)
-        )
-        presenter.onViewAvailable(view)
-        presenter.onModelUpdated(controller.model)
-        controller.connect(presenter)
+        initMobiusController(savedInstanceState)
+        initPresenter()
     }
 
     override fun onResume() {
@@ -50,5 +47,15 @@ class MainActivity : DaggerAppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         saveModel(controller.model, outState)
+    }
+
+    private fun initMobiusController(savedInstanceState: Bundle?) {
+        controller = presenter.createController(resolveDefaultModel(savedInstanceState))
+        controller.connect(presenter)
+    }
+
+    private fun initPresenter() {
+        presenter.onViewAvailable(view)
+        presenter.onModelUpdated(controller.model)
     }
 }

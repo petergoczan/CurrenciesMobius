@@ -1,9 +1,9 @@
 package com.petergoczan.currenciesmobius.data
 
 import android.os.Bundle
-import com.petergoczan.currenciesmobius.CurrencyItem
-import com.petergoczan.currenciesmobius.CurrencyModel
-import com.petergoczan.currenciesmobius.RemoteCurrenciesModel
+import com.petergoczan.currenciesmobius.mobius.CurrencyListItem
+import com.petergoczan.currenciesmobius.mobius.CurrencyModel
+import com.petergoczan.currenciesmobius.mobius.RemoteCurrenciesModel
 
 private const val ARG_CURRENCY_MODEL = "currency_model"
 private const val IS_ONLINE = "is_online"
@@ -34,10 +34,10 @@ private fun modelToBundle(model: CurrencyModel) =
 private fun modelFromBundle(bundle: Bundle) =
     CurrencyModel(
         bundle.getBoolean(IS_ONLINE),
-        bundle.getSerializable(SELECTED_ITEM) as CurrencyItem?,
+        bundle.getSerializable(SELECTED_ITEM) as CurrencyListItem?,
         bundle.getInt(AMOUNT_SET_BY_USER),
         bundle.getSerializable(REMOTE_MODEL) as RemoteCurrenciesModel
-        )
+    )
 
 private fun hasSavedModel(savedInstanceState: Bundle?): Boolean =
     savedInstanceState != null && savedInstanceState.containsKey(ARG_CURRENCY_MODEL)

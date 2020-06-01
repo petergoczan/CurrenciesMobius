@@ -1,20 +1,15 @@
 package com.petergoczan.currenciesmobius.presentation
 
-import com.petergoczan.currenciesmobius.CurrencyEffect
-import com.petergoczan.currenciesmobius.CurrencyEvent
-import com.petergoczan.currenciesmobius.CurrencyModel
-import com.petergoczan.currenciesmobius.view.list.MainPageListRow
+import com.petergoczan.currenciesmobius.mobius.CurrencyEvent
+import com.petergoczan.currenciesmobius.mobius.CurrencyModel
 import com.petergoczan.currenciesmobius.view.MainPageView
+import com.petergoczan.currenciesmobius.view.list.MainPageListRow
 import com.spotify.mobius.Connectable
 import com.spotify.mobius.MobiusLoop
-import io.reactivex.ObservableTransformer
 
 interface MainPagePresenter : Connectable<CurrencyModel, CurrencyEvent> {
 
-    fun createController(
-        effectHandlers: ObservableTransformer<CurrencyEffect, CurrencyEvent>,
-        defaultModel: CurrencyModel
-    ): MobiusLoop.Controller<CurrencyModel, CurrencyEvent>
+    fun createController(defaultModel: CurrencyModel): MobiusLoop.Controller<CurrencyModel, CurrencyEvent>
 
     fun onViewAvailable(view: MainPageView)
 

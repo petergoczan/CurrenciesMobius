@@ -1,0 +1,112 @@
+package com.petergoczan.currenciesmobius.mobius
+
+import com.petergoczan.currenciesmobius.mobius.CurrencyEffect.*
+import com.petergoczan.currenciesmobius.mobius.CurrencyEvent.*
+import com.spotify.mobius.Next
+import com.spotify.mobius.Next.dispatch
+import com.spotify.mobius.Next.next
+import java.io.Serializable
+
+fun update(
+    model: CurrencyModel,
+    event: CurrencyEvent
+): Next<CurrencyModel, CurrencyEffect> =
+    when (event) {
+        is InternetStateChanged -> next(
+            model.copy(isOnline = event.isConnected),
+            setOf(if (event.isConnected) HideNoInternetPage else ShowNoInternetPage)
+        )
+        is RowSelected -> next(
+            model.copy(selectedItem = event.selectedItem),
+            setOf(MoveItemOnTop(event.selectedItem))
+        )
+        is ReferenceCurrencyAmountChanged -> next(
+            model.copy(amountSetByUser = event.amount)
+        )
+        is RefreshTimePassed -> dispatch(
+            setOf(
+                RequestData(
+                    model.selectedItem?.code ?: DEFAULT_CURRENCY_CODE
+                )
+            )
+        )
+        is DataArrived -> next(
+            model.copy(remoteModel = event.data)
+//            setOf(UpdateListItems)
+        )
+        is CommunicationError -> dispatch(setOf(ShowCommunicationErrorPage))
+    }
+
+data class CurrencyModel(
+    val isOnline: Boolean = true,
+    val selectedItem: CurrencyListItem? = null,
+    val amountSetByUser: Int = 0,
+    val remoteModel: RemoteCurrenciesModel = RemoteCurrenciesModel()
+)
+
+data class RemoteCurrenciesModel(
+    val baseCurrency: String = DEFAULT_CURRENCY_CODE,
+    val rates: RemoteCurrencyRates = RemoteCurrencyRates()
+) : Serializable
+
+data class RemoteCurrencyRates(
+    val AUD: Double = 0.0,
+    val BGN: Double = 0.0,
+    val BRL: Double = 0.0,
+    val CAD: Double = 0.0,
+    val CHF: Double = 0.0,
+    val CNY: Double = 0.0,
+    val CZK: Double = 0.0,
+    val DKK: Double = 0.0,
+    val EUR: Double = 0.0,
+    val GBP: Double = 0.0,
+    val HKD: Double = 0.0,
+    val HRK: Double = 0.0,
+    val IDR: Double = 0.0,
+    val ILS: Double = 0.0,
+    val INR: Double = 0.0,
+    val ISK: Double = 0.0,
+    val JPY: Double = 0.0,
+    val KRW: Double = 0.0,
+    val MXN: Double = 0.0,
+    val MYR: Double = 0.0,
+    val NOK: Double = 0.0,
+    val NZD: Double = 0.0,
+    val PHP: Double = 0.0,
+    val PLN: Double = 0.0,
+    val RON: Double = 0.0,
+    val RUB: Double = 0.0,
+    val SEK: Double = 0.0,
+    val SGD: Double = 0.0,
+    val THB: Double = 0.0,
+    val USD: Double = 0.0,
+    val ZAR: Double = 0.0
+)
+
+data class CurrencyListItem(
+    val imageUrl: String = "",
+    val code: String = "",
+    val name: String = "",
+    val amount: Float = 0.0F,
+    val multiplierForBaseCurrency: Double = 0.0
+) : Serializable
+
+sealed class CurrencyEvent {
+    data class InternetStateChanged(val isConnected: Boolean) : CurrencyEvent()
+    data class RowSelected(val selectedItem: CurrencyListItem) : CurrencyEvent()
+    data class ReferenceCurrencyAmountChanged(val amount: Int) : CurrencyEvent()
+    object RefreshTimePassed : CurrencyEvent()
+    data class DataArrived(val data: RemoteCurrenciesModel) : CurrencyEvent()
+    object CommunicationError : CurrencyEvent()
+}
+
+sealed class CurrencyEffect {
+    data class RequestData(val baseCurrencyCode: String) : CurrencyEffect()
+    object UpdateListItems : CurrencyEffect()
+    object ShowCommunicationErrorPage : CurrencyEffect()
+    data class MoveItemOnTop(val itemToMove: CurrencyListItem) : CurrencyEffect()
+    object ShowNoInternetPage : CurrencyEffect()
+    object HideNoInternetPage : CurrencyEffect()
+}
+
+const val DEFAULT_CURRENCY_CODE = "EUR"

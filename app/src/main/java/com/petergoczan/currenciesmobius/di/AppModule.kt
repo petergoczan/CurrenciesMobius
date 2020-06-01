@@ -7,6 +7,8 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.jakewharton.picasso.OkHttp3Downloader
 import com.petergoczan.currenciesmobius.CurrencyApplication
+import com.petergoczan.currenciesmobius.scheduler.SchedulersProvider
+import com.petergoczan.currenciesmobius.scheduler.SchedulersProviderImpl
 import com.squareup.picasso.Picasso
 import dagger.Binds
 import dagger.Module
@@ -26,6 +28,9 @@ abstract class AppModule {
     @Binds
     internal abstract fun context(application: CurrencyApplication): Context
 
+    @Binds
+    internal abstract fun schedulers(schedulers: SchedulersProviderImpl): SchedulersProvider
+
     @Module
     companion object {
 
@@ -41,9 +46,9 @@ abstract class AppModule {
         @ApplicationScope
         internal fun retrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit.Builder {
             return Retrofit.Builder()
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .client(okHttpClient)
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(okHttpClient)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         }
 
         @Provides
