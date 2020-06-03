@@ -2,6 +2,7 @@ package com.petergoczan.currenciesmobius.mobius.effecthandler
 
 import android.util.Log
 import com.petergoczan.currenciesmobius.communication.CurrenciesEndpoint
+import com.petergoczan.currenciesmobius.data.RemoteModelToCurrencyListItemsTransformer
 import com.petergoczan.currenciesmobius.di.ActivityScope
 import com.petergoczan.currenciesmobius.mobius.CurrencyEffect
 import com.petergoczan.currenciesmobius.mobius.CurrencyEvent
@@ -14,7 +15,8 @@ import javax.inject.Inject
 @ActivityScope
 class RequestDataEffectHandler @Inject constructor(
     private val currenciesEndpoint: CurrenciesEndpoint,
-    private val schedulersProvider: SchedulersProvider
+    private val schedulersProvider: SchedulersProvider,
+    private val remoteModelModelToCurrencyListItemsTransformer: RemoteModelToCurrencyListItemsTransformer
 ) :
     ObservableTransformer<CurrencyEffect.RequestData, CurrencyEvent> {
 
@@ -23,6 +25,7 @@ class RequestDataEffectHandler @Inject constructor(
             currenciesEndpoint
                 .getCurrencies(it.baseCurrencyCode)
                 .subscribeOn(schedulersProvider.io())
+                .compose(remoteModelModelToCurrencyListItemsTransformer)
                 .map { model ->
                     Log.d("CurrencyMobius", "data arrived: $model")
                     CurrencyEvent.DataArrived(model)

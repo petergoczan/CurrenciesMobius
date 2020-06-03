@@ -31,7 +31,7 @@ fun update(
             )
         )
         is DataArrived -> next(
-            model.copy(remoteModel = event.data)
+            model.copy(items = event.items)
 //            setOf(UpdateListItems)
         )
         is CommunicationError -> dispatch(setOf(ShowCommunicationErrorPage))
@@ -41,7 +41,7 @@ data class CurrencyModel(
     val isOnline: Boolean = true,
     val selectedItem: CurrencyListItem? = null,
     val amountSetByUser: Int = 0,
-    val remoteModel: RemoteCurrenciesModel = RemoteCurrenciesModel()
+    val items: List<CurrencyListItem> = listOf()
 )
 
 data class RemoteCurrenciesModel(
@@ -96,7 +96,7 @@ sealed class CurrencyEvent {
     data class RowSelected(val selectedItem: CurrencyListItem) : CurrencyEvent()
     data class ReferenceCurrencyAmountChanged(val amount: Int) : CurrencyEvent()
     object RefreshTimePassed : CurrencyEvent()
-    data class DataArrived(val data: RemoteCurrenciesModel) : CurrencyEvent()
+    data class DataArrived(val items: List<CurrencyListItem>) : CurrencyEvent()
     object CommunicationError : CurrencyEvent()
 }
 
