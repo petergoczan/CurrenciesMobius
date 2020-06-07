@@ -8,7 +8,7 @@ import io.reactivex.ObservableTransformer
 import javax.inject.Inject
 import kotlin.reflect.full.memberProperties
 
-class RemoteModelToCurrencyListItemsTransformer @Inject constructor() :
+class RemoteModelToCurrencyListItemsTransformer @Inject constructor(private val currencyDetailsMapper: CurrencyDetailsMapper) :
     ObservableTransformer<RemoteCurrenciesModel, List<CurrencyListItem>> {
 
     override fun apply(upstream: Observable<RemoteCurrenciesModel>): ObservableSource<List<CurrencyListItem>> {
@@ -19,6 +19,8 @@ class RemoteModelToCurrencyListItemsTransformer @Inject constructor() :
                 items.add(
                     CurrencyListItem(
                         code = it.name,
+                        name = currencyDetailsMapper.getNameByCurrencyCode(it.name),
+                        imageUrl = currencyDetailsMapper.getIconByCurrencyCode(it.name),
                         multiplierForBaseCurrency = it.getter.call(rates) as Double
                     )
                 )

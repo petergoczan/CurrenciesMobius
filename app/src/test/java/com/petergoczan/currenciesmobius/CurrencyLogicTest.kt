@@ -70,28 +70,22 @@ class CurrencyLogicTest {
     @Test
     fun updateSelectedItem_whenRowSelected() {
         val model = CurrencyModel()
-        val selectedItem = CurrencyListItem(
-            "test",
-            "test",
-            "test",
-            1234F,
-            27.toDouble()
-        )
+        val selectedItemCode = "TEST"
         updateSpec
             .given(model)
-            .whenEvent(RowSelected(selectedItem))
-            .then(assertThatNext(hasModel(model.copy(selectedItem = selectedItem))))
+            .whenEvent(RowSelected(selectedItemCode))
+            .then(assertThatNext(hasModel(model.copy(selectedItemCode = selectedItemCode))))
     }
 
     @Test
     fun moveItemOnTop_whenRowSelected() {
-        val selectedItem = CurrencyListItem()
+        val selectedItemCode = "TEST"
         updateSpec
             .given(CurrencyModel())
-            .whenEvent(RowSelected(selectedItem))
+            .whenEvent(RowSelected(selectedItemCode))
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
-                    hasEffects(MoveItemOnTop(selectedItem))
+                    hasEffects(MoveItemOnTop(selectedItemCode))
                 )
             )
     }
@@ -119,45 +113,35 @@ class CurrencyLogicTest {
 
     @Test
     fun requestDataWithCurrentSelection_whenRefreshTimePassed() {
-        val selectedItem = CurrencyListItem(
-            "test",
-            "test",
-            "test",
-            2654F,
-            27.toDouble()
-        )
-        val model =
-            CurrencyModel(selectedItem = selectedItem)
+        val selectedItemCode = "TEST"
+        val model = CurrencyModel(selectedItemCode = selectedItemCode)
         updateSpec
             .given(model)
             .whenEvent(RefreshTimePassed)
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
-                    hasEffects(RequestData(selectedItem.code))
+                    hasEffects(RequestData(selectedItemCode))
                 )
             )
     }
 
     @Test
     fun updateRemoteModel_whenDataArrived() {
-        val remoteModelOriginal =
-            RemoteCurrenciesModel()
-        val remoteModelNew =
-            RemoteCurrenciesModel()
-        val model =
-            CurrencyModel(remoteModel = remoteModelOriginal)
+        val originalModel = listOf<CurrencyListItem>()
+        val newModel = listOf<CurrencyListItem>()
+        val model = CurrencyModel(items = originalModel)
         updateSpec
             .given(model)
-            .whenEvent(DataArrived(remoteModelNew))
-            .then(assertThatNext(hasModel(model.copy(remoteModel = remoteModelNew))))
+            .whenEvent(DataArrived(newModel))
+            .then(assertThatNext(hasModel(model.copy(items = newModel))))
     }
 
     @Test
     fun updateListItems_whenDataArrived() {
-        val model = CurrencyModel()
+        val newModel = listOf<CurrencyListItem>()
         updateSpec
-            .given(model)
-            .whenEvent(DataArrived(RemoteCurrenciesModel()))
+            .given(CurrencyModel())
+            .whenEvent(DataArrived(newModel))
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
                     hasEffects(UpdateListItems)
@@ -174,30 +158,6 @@ class CurrencyLogicTest {
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
                     hasEffects(ShowCommunicationErrorPage)
-                )
-            )
-    }
-
-    @Test
-    fun startTimer_whenAppResumed() {
-        updateSpec
-            .given(CurrencyModel())
-            .whenEvent(AppResumed)
-            .then(
-                assertThatNext<CurrencyModel, CurrencyEffect>(
-                    hasEffects(StartTimer)
-                )
-            )
-    }
-
-    @Test
-    fun stopTimer_whenAppPaused() {
-        updateSpec
-            .given(CurrencyModel())
-            .whenEvent(AppPaused)
-            .then(
-                assertThatNext<CurrencyModel, CurrencyEffect>(
-                    hasEffects(StopTimer)
                 )
             )
     }
