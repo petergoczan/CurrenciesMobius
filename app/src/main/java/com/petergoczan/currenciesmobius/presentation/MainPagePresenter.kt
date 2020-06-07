@@ -9,13 +9,19 @@ import com.spotify.mobius.MobiusLoop
 
 interface MainPagePresenter : Connectable<CurrencyModel, CurrencyEvent> {
 
-    fun createController(defaultModel: CurrencyModel): MobiusLoop.Controller<CurrencyModel, CurrencyEvent>
+    fun createController(defaultModel: CurrencyModel)
+
+    fun onResume()
+
+    fun onPause()
+
+    fun onDestroy()
 
     fun onViewAvailable(view: MainPageView)
-
-    fun onModelUpdated(model: CurrencyModel)
 
     fun onBindViewAtListPosition(position: Int, row: MainPageListRow)
 
     fun getListItemCount(): Int
+
+    fun getModel(): CurrencyModel
 }

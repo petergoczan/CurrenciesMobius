@@ -22,15 +22,32 @@ class MainPagePresenterImpl @Inject constructor(
 ) :
     MainPagePresenter {
 
-    private lateinit var model: CurrencyModel
+    private lateinit var controller: MobiusLoop.Controller<CurrencyModel, CurrencyEvent>
     private lateinit var view: MainPageView
 
     override fun onViewAvailable(view: MainPageView) {
         this.view = view
     }
 
-    override fun onModelUpdated(model: CurrencyModel) {
-        this.model = model
+    override fun createController(defaultModel: CurrencyModel) {
+        controller = MobiusAndroid.controller(createLoop(), defaultModel)
+        controller.connect(this)
+    }
+
+    override fun onResume() {
+        controller.start()
+    }
+
+    override fun onPause() {
+        controller.stop()
+    }
+
+    override fun onDestroy() {
+        controller.disconnect()
+    }
+
+    override fun getModel(): CurrencyModel {
+        return controller.model
     }
 
     override fun onBindViewAtListPosition(position: Int, row: MainPageListRow) {
@@ -60,12 +77,6 @@ class MainPagePresenterImpl @Inject constructor(
             }
 
         }
-    }
-
-    override fun createController(
-        defaultModel: CurrencyModel
-    ): MobiusLoop.Controller<CurrencyModel, CurrencyEvent> {
-        return MobiusAndroid.controller(createLoop(), defaultModel)
     }
 
     private fun createLoop():

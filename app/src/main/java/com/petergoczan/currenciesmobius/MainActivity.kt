@@ -3,11 +3,8 @@ package com.petergoczan.currenciesmobius
 import android.os.Bundle
 import com.petergoczan.currenciesmobius.data.resolveDefaultModel
 import com.petergoczan.currenciesmobius.data.saveModel
-import com.petergoczan.currenciesmobius.mobius.CurrencyEvent
-import com.petergoczan.currenciesmobius.mobius.CurrencyModel
 import com.petergoczan.currenciesmobius.presentation.MainPagePresenter
 import com.petergoczan.currenciesmobius.view.MainPageView
-import com.spotify.mobius.MobiusLoop
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -19,43 +16,35 @@ class MainActivity : DaggerAppCompatActivity() {
     @Inject
     lateinit var presenter: MainPagePresenter
 
-    private lateinit var controller: MobiusLoop.Controller<CurrencyModel, CurrencyEvent>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         view.bind(root)
-        initMobiusController(savedInstanceState)
-        initPresenter()
+        initPresenter(savedInstanceState)
     }
 
     override fun onResume() {
         super.onResume()
-        controller.start()
+        presenter.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        controller.stop()
+        presenter.onPause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        controller.disconnect()
+        presenter.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        saveModel(controller.model, outState)
+        saveModel(presenter.getModel(), outState)
     }
 
-    private fun initMobiusController(savedInstanceState: Bundle?) {
-        controller = presenter.createController(resolveDefaultModel(savedInstanceState))
-        controller.connect(presenter)
-    }
-
-    private fun initPresenter() {
+    private fun initPresenter(savedInstanceState: Bundle?) {
+        presenter.createController(resolveDefaultModel(savedInstanceState))
         presenter.onViewAvailable(view)
-        presenter.onModelUpdated(controller.model)
     }
 }
