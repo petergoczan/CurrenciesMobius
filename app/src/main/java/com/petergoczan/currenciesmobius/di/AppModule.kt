@@ -5,10 +5,10 @@ import android.content.res.Resources
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.jakewharton.picasso.OkHttp3Downloader
 import com.petergoczan.currenciesmobius.CurrencyApplication
 import com.petergoczan.currenciesmobius.scheduler.SchedulersProvider
 import com.petergoczan.currenciesmobius.scheduler.SchedulersProviderImpl
+import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import dagger.Binds
 import dagger.Module
@@ -62,7 +62,9 @@ abstract class AppModule {
         @JvmStatic
         @ApplicationScope
         internal fun picasso(context: Context, okHttpDownloader: OkHttp3Downloader): Picasso {
-            return Picasso.Builder(context).downloader(okHttpDownloader).build()
+            return Picasso.Builder(context)
+                .downloader(okHttpDownloader)
+                .build()
         }
 
         @Provides

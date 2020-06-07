@@ -5,6 +5,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.row_main_activity_list.view.*
 
 class MainPageListRowViewHolder(root: View) : RecyclerView.ViewHolder(root),
@@ -22,8 +23,8 @@ class MainPageListRowViewHolder(root: View) : RecyclerView.ViewHolder(root),
         subTitle.text = currencyName
     }
 
-    override fun setImage(imageUrl: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun setImage(picasso: Picasso, imageUrl: String) {
+        picasso.load(imageUrl).into(image)
     }
 
     override fun setAmount(amount: Float) {

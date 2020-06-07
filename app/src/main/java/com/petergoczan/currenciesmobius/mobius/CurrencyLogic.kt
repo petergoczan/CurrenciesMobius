@@ -28,8 +28,8 @@ fun update(
             setOf(RequestData(model.selectedItemCode))
         )
         is DataArrived -> next(
-            model.copy(items = event.items)
-//            setOf(UpdateListItems)
+            model.copy(items = event.items),
+            setOf(UpdateListItems)
         )
         is CommunicationError -> dispatch(setOf(ShowCommunicationErrorPage))
     }

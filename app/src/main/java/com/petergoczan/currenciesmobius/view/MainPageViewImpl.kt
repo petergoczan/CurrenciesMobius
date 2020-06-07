@@ -21,4 +21,8 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
     }
+
+    override fun update() {
+        adapter.notifyDataSetChanged()
+    }
 }

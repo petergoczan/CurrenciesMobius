@@ -13,14 +13,15 @@ import com.spotify.mobius.android.AndroidLogger
 import com.spotify.mobius.android.MobiusAndroid
 import com.spotify.mobius.functions.Consumer
 import com.spotify.mobius.rx2.RxMobius
+import com.squareup.picasso.Picasso
 import javax.inject.Inject
 
 @ActivityScope
 class MainPagePresenterImpl @Inject constructor(
     private val effectHandlers: CurrencyEffectHandlers,
-    private val timerEventSource: TimerEventSource
-) :
-    MainPagePresenter {
+    private val timerEventSource: TimerEventSource,
+    private val picasso: Picasso
+) : MainPagePresenter {
 
     private lateinit var controller: MobiusLoop.Controller<CurrencyModel, CurrencyEvent>
     private lateinit var view: MainPageView
@@ -51,17 +52,19 @@ class MainPagePresenterImpl @Inject constructor(
     }
 
     override fun onBindViewAtListPosition(position: Int, row: MainPageListRow) {
-        //TODO
-//        val item: CurrencyItem = model.remoteModel.currencyItems[position]
-//        row.setTitle(item.code)
-//        row.setSubtitle(item.name)
-//        row.setAmount(item.amount)
-//        row.setImage(item.imageUrl)
+        val item: CurrencyListItem = getModel().items[position]
+        row.setTitle(item.code)
+        row.setSubtitle(item.name)
+        row.setAmount(item.amount)
+        row.setImage(picasso, item.imageUrl)
     }
 
     override fun getListItemCount(): Int {
-        //TODO
-        return 0//model.remoteModel.currencyItems.size
+        return controller.model.items.size
+    }
+
+    override fun updateList() {
+        view.update()
     }
 
     override fun connect(output: Consumer<CurrencyEvent>): Connection<CurrencyModel> {
@@ -86,7 +89,7 @@ class MainPagePresenterImpl @Inject constructor(
                 model,
                 event
             )
-        }, effectHandlers.createEffectHandlers())
+        }, effectHandlers.createEffectHandlers(this))
             .eventSource(timerEventSource)
             .logger(AndroidLogger.tag("CurrencyMobius"))
 }

@@ -23,5 +23,7 @@ interface MainPagePresenter : Connectable<CurrencyModel, CurrencyEvent> {
 
     fun getListItemCount(): Int
 
+    fun updateList()
+
     fun getModel(): CurrencyModel
 }
