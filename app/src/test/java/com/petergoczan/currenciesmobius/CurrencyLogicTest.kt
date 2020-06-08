@@ -95,8 +95,13 @@ class CurrencyLogicTest {
         val model = CurrencyModel()
         updateSpec
             .given(model)
-            .whenEvent(ReferenceCurrencyAmountChanged(123))
-            .then(assertThatNext(hasModel(model.copy(amountSetByUser = 123))))
+            .whenEvent(ReferenceCurrencyAmountChanged(123F))
+            .then(
+                assertThatNext<CurrencyModel, CurrencyEffect>(
+                    hasModel(model.copy(amountSetByUser = 123F)),
+                    hasEffects(UpdateListItems)
+                )
+            )
     }
 
     @Test

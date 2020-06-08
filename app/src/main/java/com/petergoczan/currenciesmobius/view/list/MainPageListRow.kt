@@ -11,4 +11,6 @@ interface MainPageListRow {
     fun setImage(picasso: Picasso, imageUrl: String)
 
     fun setAmount(amount: Float)
+
+    fun setAmountChangedListener(onAmountChanged: (Float) -> Unit)
 }

@@ -24,7 +24,7 @@ fun resolveDefaultModel(savedInstanceState: Bundle?): CurrencyModel =
 private fun modelToBundle(model: CurrencyModel) =
     Bundle().apply {
         putBoolean(IS_ONLINE, model.isOnline)
-        putInt(AMOUNT_SET_BY_USER, model.amountSetByUser)
+        putFloat(AMOUNT_SET_BY_USER, model.amountSetByUser)
         putString(SELECTED_ITEM_CODE, model.selectedItemCode)
         putParcelableArrayList(REMOTE_MODEL, ArrayList(model.items))
     }
@@ -33,7 +33,7 @@ private fun modelFromBundle(bundle: Bundle) =
     CurrencyModel(
         bundle.getBoolean(IS_ONLINE),
         bundle.getString(SELECTED_ITEM_CODE)!!,
-        bundle.getInt(AMOUNT_SET_BY_USER),
+        bundle.getFloat(AMOUNT_SET_BY_USER),
         bundle.getParcelableArrayList<CurrencyListItem>(REMOTE_MODEL)!!.toList()
     )
 

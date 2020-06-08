@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.row_main_activity_list.view.*
@@ -30,4 +31,16 @@ class MainPageListRowViewHolder(root: View) : RecyclerView.ViewHolder(root),
     override fun setAmount(amount: Float) {
         quantity.setText(amount.toString())
     }
+
+    override fun setAmountChangedListener(onAmountChanged: (Float) -> Unit) {
+        quantity.addTextChangedListener {
+            if (quantity.text.isNotEmpty()) {
+                onAmountChanged.invoke(quantity.text.toString().toFloat())
+            } else {
+                quantity.setText(DEFAULT_QUANTITY)
+            }
+        }
+    }
 }
+
+private const val DEFAULT_QUANTITY = "0.0"

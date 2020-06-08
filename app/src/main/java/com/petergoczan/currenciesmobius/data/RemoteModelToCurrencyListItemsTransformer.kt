@@ -21,7 +21,7 @@ class RemoteModelToCurrencyListItemsTransformer @Inject constructor(private val 
                         code = it.name,
                         name = currencyDetailsMapper.getNameByCurrencyCode(it.name),
                         imageUrl = currencyDetailsMapper.getIconByCurrencyCode(it.name),
-                        multiplierForBaseCurrency = it.getter.call(rates) as Double
+                        multiplierForBaseCurrency = it.getter.call(rates) as Float
                     )
                 )
             }

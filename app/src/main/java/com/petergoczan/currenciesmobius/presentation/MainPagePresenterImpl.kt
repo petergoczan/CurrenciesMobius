@@ -25,6 +25,7 @@ class MainPagePresenterImpl @Inject constructor(
 
     private lateinit var controller: MobiusLoop.Controller<CurrencyModel, CurrencyEvent>
     private lateinit var view: MainPageView
+    private lateinit var eventConsumer: Consumer<CurrencyEvent>
 
     override fun onViewAvailable(view: MainPageView) {
         this.view = view
@@ -55,8 +56,8 @@ class MainPagePresenterImpl @Inject constructor(
         val item: CurrencyListItem = getModel().items[position]
         row.setTitle(item.code)
         row.setSubtitle(item.name)
-        row.setAmount(item.amount)
         row.setImage(picasso, item.imageUrl)
+        setupRowAmount(position, row, item.multiplierForBaseCurrency)
     }
 
     override fun getListItemCount(): Int {
@@ -68,6 +69,9 @@ class MainPagePresenterImpl @Inject constructor(
     }
 
     override fun connect(output: Consumer<CurrencyEvent>): Connection<CurrencyModel> {
+
+        eventConsumer = output
+
         return object : Connection<CurrencyModel> {
             override fun accept(value: CurrencyModel) {
                 Log.d("CurrencyMobius", "accept() called in MainPagePresenter / connect()")
@@ -79,6 +83,23 @@ class MainPagePresenterImpl @Inject constructor(
                 //TODO dispose of whatever needs to be disposed
             }
 
+        }
+    }
+
+    private fun setupRowAmount(position: Int, row: MainPageListRow, itemMultiplier: Float) {
+        row.setAmount(
+            if (position == 0) {
+                getModel().amountSetByUser
+            } else {
+                getModel().amountSetByUser * itemMultiplier
+            }
+        )
+        row.setAmountChangedListener { amount ->
+            if (position == 0) {
+                eventConsumer.accept(
+                    CurrencyEvent.ReferenceCurrencyAmountChanged(amount = amount)
+                )
+            }
         }
     }
 
