@@ -1,6 +1,7 @@
 <resources>
     <dimen name="small">8dp</dimen>
     <dimen name="medium">16dp</dimen>
-    <dimen name="text_size_small">16sp</dimen>
-    <dimen name="text_size_medium">22sp</dimen>
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="text_size_big">24sp</dimen>
 </resources>
