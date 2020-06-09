@@ -16,7 +16,7 @@ class TimerEventSource @Inject constructor(private val schedulersProvider: Sched
     override fun subscribe(eventConsumer: Consumer<CurrencyEvent>): Disposable {
 
         val timerDisposable = Observable
-            .interval(5, TimeUnit.SECONDS)
+            .interval(0, 1, TimeUnit.SECONDS)
             .subscribeOn(schedulersProvider.io())
             .subscribe { eventConsumer.accept(CurrencyEvent.RefreshTimePassed) }
 
