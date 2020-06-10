@@ -19,8 +19,8 @@
 
     <LinearLayout
         android:layout_width="0px"
-        android:layout_weight="1"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         android:orientation="vertical">
 
         <TextView
@@ -43,8 +43,8 @@
         android:id="@+id/amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
         android:gravity="center_horizontal"
+        android:inputType="numberDecimal"
         android:textSize="@dimen/text_size_medium"
         android:textStyle="bold"
         tools:text="2254.14" />

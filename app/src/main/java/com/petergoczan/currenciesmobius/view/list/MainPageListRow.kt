@@ -10,7 +10,11 @@ interface MainPageListRow {
 
     fun setImage(picasso: Picasso, imageUrl: String)
 
-    fun setAmount(amount: Float)
+    fun setAmount(amount: Double)
 
-    fun setAmountChangedListener(onAmountChanged: (Float) -> Unit)
+    fun setupAmountChangedListener(onAmountChanged: (Double) -> Unit)
+
+    fun setRowSelectedListener(rowSelected: (Int) -> Unit)
+
+    fun getAdapterPosition(): Int
 }

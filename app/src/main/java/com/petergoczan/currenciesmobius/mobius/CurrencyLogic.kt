@@ -1,6 +1,8 @@
 package com.petergoczan.currenciesmobius.mobius
 
 import android.os.Parcelable
+import com.petergoczan.currenciesmobius.data.getReorderedItemsByExistingList
+import com.petergoczan.currenciesmobius.data.getReorderedItemsForItemClick
 import com.petergoczan.currenciesmobius.mobius.CurrencyEffect.*
 import com.petergoczan.currenciesmobius.mobius.CurrencyEvent.*
 import com.spotify.mobius.Next
@@ -17,30 +19,57 @@ fun update(
             model.copy(isOnline = event.isConnected),
             setOf(if (event.isConnected) HideNoInternetPage else ShowNoInternetPage)
         )
-        is RowSelected -> next(
-            model.copy(selectedItemCode = event.selectedItemCode),
-            setOf(MoveItemOnTop(event.selectedItemCode))
-        )
-        is ReferenceCurrencyAmountChanged -> next(
-            model.copy(amountSetByUser = event.amount),
-            setOf(UpdateListItems)
-        )
-        is RefreshTimePassed -> dispatch(
-            setOf(RequestData(model.selectedItemCode))
-        )
-        is DataArrived -> next(
-            model.copy(items = event.items),
-            setOf(UpdateListItems)
-        )
+        is RowSelected -> {
+            val reorderedItems = getReorderedItemsForItemClick(model.items, event.itemPosition)
+            next(
+                model.copy(
+                    items = reorderedItems,
+                    amountSetByUser = model.amountSetByUser * reorderedItems[0].multiplierForBaseCurrency,
+                    baseCurrencyCode = reorderedItems[0].code
+                ),
+                setOf(MoveItemOnTop(event.itemPosition))
+            )
+        }
+        is ReferenceCurrencyAmountChanged ->
+            next(
+                model.copy(amountSetByUser = event.amount),
+                setOf(UpdateListItems)
+            )
+        is RefreshTimePassed -> dispatch(setOf(RequestData(model.baseCurrencyCode)))
+        is DataArrived -> {
+            val effect = if (model.items.isEmpty()) {
+                InitListItems
+            } else {
+                UpdateListItems
+            }
+            next(
+                model.copy(
+                    items = if (model.items.isNotEmpty()) {
+                        getReorderedItemsByExistingList(model, event.items)
+                    } else {
+                        event.items
+                    }
+                ),
+                setOf(effect)
+            )
+        }
         is CommunicationError -> dispatch(setOf(ShowCommunicationErrorPage))
     }
 
 data class CurrencyModel(
+    val baseCurrencyCode: String = DEFAULT_CURRENCY_CODE,
     val isOnline: Boolean = true,
-    val selectedItemCode: String = DEFAULT_CURRENCY_CODE,
-    val amountSetByUser: Float = 0f,
+    val amountSetByUser: Double = DEFAULT_AMOUNT,
     val items: List<CurrencyListItem> = listOf()
 )
+
+@Parcelize
+data class CurrencyListItem(
+    val imageUrl: String = "",
+    val code: String = "",
+    val name: String = "",
+    val multiplierForBaseCurrency: Float = 0F
+) : Parcelable
 
 data class RemoteCurrenciesModel(
     val baseCurrency: String = DEFAULT_CURRENCY_CODE,
@@ -81,19 +110,10 @@ data class RemoteCurrencyRates(
     val ZAR: Float = 0F
 )
 
-@Parcelize
-data class CurrencyListItem(
-    val imageUrl: String = "",
-    val code: String = "",
-    val name: String = "",
-    val amount: Float = 0F,
-    val multiplierForBaseCurrency: Float = 0F
-) : Parcelable
-
 sealed class CurrencyEvent {
     data class InternetStateChanged(val isConnected: Boolean) : CurrencyEvent()
-    data class RowSelected(val selectedItemCode: String) : CurrencyEvent()
-    data class ReferenceCurrencyAmountChanged(val amount: Float) : CurrencyEvent()
+    data class RowSelected(val itemPosition: Int) : CurrencyEvent()
+    data class ReferenceCurrencyAmountChanged(val amount: Double) : CurrencyEvent()
     object RefreshTimePassed : CurrencyEvent()
     data class DataArrived(val items: List<CurrencyListItem>) : CurrencyEvent()
     object CommunicationError : CurrencyEvent()
@@ -101,11 +121,13 @@ sealed class CurrencyEvent {
 
 sealed class CurrencyEffect {
     data class RequestData(val baseCurrencyCode: String) : CurrencyEffect()
+    object InitListItems : CurrencyEffect()
     object UpdateListItems : CurrencyEffect()
     object ShowCommunicationErrorPage : CurrencyEffect()
-    data class MoveItemOnTop(val codeOfItemToMove: String) : CurrencyEffect()
+    data class MoveItemOnTop(val itemPosition: Int) : CurrencyEffect()
     object ShowNoInternetPage : CurrencyEffect()
     object HideNoInternetPage : CurrencyEffect()
 }
 
 const val DEFAULT_CURRENCY_CODE = "EUR"
+const val DEFAULT_AMOUNT = 100.0

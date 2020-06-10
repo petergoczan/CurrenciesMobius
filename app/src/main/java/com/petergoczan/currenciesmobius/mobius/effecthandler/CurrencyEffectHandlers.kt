@@ -22,9 +22,19 @@ class CurrencyEffectHandlers @Inject constructor(
                 CurrencyEffect.RequestData::class.java,
                 requestDataEffectHandler
             )
+            .addConsumer<CurrencyEffect.InitListItems>(
+                CurrencyEffect.InitListItems::class.java,
+                { presenter.initList() },
+                schedulersProvider.ui()
+            )
             .addConsumer<CurrencyEffect.UpdateListItems>(
                 CurrencyEffect.UpdateListItems::class.java,
                 { presenter.updateList() },
+                schedulersProvider.ui()
+            )
+            .addConsumer<CurrencyEffect.MoveItemOnTop>(
+                CurrencyEffect.MoveItemOnTop::class.java,
+                { presenter.moveItemToTop(it.itemPosition) },
                 schedulersProvider.ui()
             )
             .build()

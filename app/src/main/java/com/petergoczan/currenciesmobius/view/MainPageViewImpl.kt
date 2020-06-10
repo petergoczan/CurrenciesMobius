@@ -13,16 +13,28 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
     MainPageView {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var layoutManager: LinearLayoutManager
 
     override fun bind(rootView: View) {
         recyclerView = rootView.recycler_view
         recyclerView.setHasFixedSize(true)
-        val layoutManager = LinearLayoutManager(recyclerView.context)
+        layoutManager = LinearLayoutManager(recyclerView.context)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
     }
 
-    override fun update() {
+    override fun initList() {
         adapter.notifyDataSetChanged()
+    }
+
+    override fun updateList() {
+        for (i in 1 until adapter.itemCount) {
+            adapter.notifyItemChanged(i)
+        }
+    }
+
+    override fun notifyItemMovedToTop(originalItemPosition: Int) {
+        adapter.notifyItemMoved(originalItemPosition, 0)
+        layoutManager.scrollToPosition(0);
     }
 }

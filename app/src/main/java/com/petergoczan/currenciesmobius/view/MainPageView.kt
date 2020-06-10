@@ -6,5 +6,9 @@ interface MainPageView {
 
     fun bind(rootView: View)
 
-    fun update()
+    fun initList()
+
+    fun updateList()
+
+    fun notifyItemMovedToTop(originalItemPosition: Int)
 }

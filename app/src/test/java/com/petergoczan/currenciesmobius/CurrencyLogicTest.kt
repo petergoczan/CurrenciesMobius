@@ -68,24 +68,28 @@ class CurrencyLogicTest {
     }
 
     @Test
-    fun updateSelectedItem_whenRowSelected() {
-        val model = CurrencyModel()
-        val selectedItemCode = "TEST"
+    fun updateModel_whenRowSelected() {
+        val selectedItemPosition = 2
+        val firstItem = CurrencyListItem(code = "TEST1", multiplierForBaseCurrency = 2f)
+        val secondItem = CurrencyListItem(code = "TEST2", multiplierForBaseCurrency = 3f)
+        val thirdItem = CurrencyListItem(code = "TEST3", multiplierForBaseCurrency = 4f)
+        val itemsBeforeUpdate = listOf(firstItem, secondItem, thirdItem)
+        val itemsAfterUpdate = listOf(thirdItem, firstItem, secondItem)
+        val model = CurrencyModel(items = itemsBeforeUpdate, amountSetByUser = 2.0)
         updateSpec
             .given(model)
-            .whenEvent(RowSelected(selectedItemCode))
-            .then(assertThatNext(hasModel(model.copy(selectedItemCode = selectedItemCode))))
-    }
-
-    @Test
-    fun moveItemOnTop_whenRowSelected() {
-        val selectedItemCode = "TEST"
-        updateSpec
-            .given(CurrencyModel())
-            .whenEvent(RowSelected(selectedItemCode))
+            .whenEvent(RowSelected(selectedItemPosition))
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
-                    hasEffects(MoveItemOnTop(selectedItemCode))
+                    hasModel(
+                        model.copy(
+                            items = itemsAfterUpdate,
+                            baseCurrencyCode = "TEST3",
+                            amountSetByUser = 8.0
+                        )
+                    ),
+                    hasEffects(MoveItemOnTop(selectedItemPosition))
+
                 )
             )
     }
@@ -93,12 +97,13 @@ class CurrencyLogicTest {
     @Test
     fun updateAmount_whenReferenceCurrencyAmountChanged() {
         val model = CurrencyModel()
+        val amount = 123.0
         updateSpec
             .given(model)
-            .whenEvent(ReferenceCurrencyAmountChanged(123F))
+            .whenEvent(ReferenceCurrencyAmountChanged(amount))
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
-                    hasModel(model.copy(amountSetByUser = 123F)),
+                    hasModel(model.copy(amountSetByUser = amount)),
                     hasEffects(UpdateListItems)
                 )
             )
@@ -118,8 +123,8 @@ class CurrencyLogicTest {
 
     @Test
     fun requestDataWithCurrentSelection_whenRefreshTimePassed() {
-        val selectedItemCode = "TEST"
-        val model = CurrencyModel(selectedItemCode = selectedItemCode)
+        val selectedItemCode = "TEST1"
+        val model = CurrencyModel(baseCurrencyCode = selectedItemCode)
         updateSpec
             .given(model)
             .whenEvent(RefreshTimePassed)
@@ -131,22 +136,56 @@ class CurrencyLogicTest {
     }
 
     @Test
-    fun updateRemoteModel_whenDataArrived() {
-        val originalModel = listOf<CurrencyListItem>()
-        val newModel = listOf<CurrencyListItem>()
-        val model = CurrencyModel(items = originalModel)
+    fun updateRemoteModel_whenDataArrived_AndModelIsEmpty() {
+        val firstItemAfterUpdate = CurrencyListItem(code = "TEST1", multiplierForBaseCurrency = 5f)
+        val secondItemAfterUpdate = CurrencyListItem(code = "TEST2", multiplierForBaseCurrency = 6f)
+        val thirdItemAfterUpdate = CurrencyListItem(code = "TEST3", multiplierForBaseCurrency = 7f)
+        val newItems = listOf(firstItemAfterUpdate, secondItemAfterUpdate, thirdItemAfterUpdate)
+        val model = CurrencyModel()
         updateSpec
             .given(model)
-            .whenEvent(DataArrived(newModel))
-            .then(assertThatNext(hasModel(model.copy(items = newModel))))
+            .whenEvent(DataArrived(newItems))
+            .then(assertThatNext(hasModel(model.copy(items = newItems))))
     }
 
     @Test
-    fun updateListItems_whenDataArrived() {
-        val newModel = listOf<CurrencyListItem>()
+    fun updateRemoteModel_whenDataArrived_AndModelIsNotEmpty() {
+        val firstItemBeforeUpdate = CurrencyListItem(code = "TEST1", multiplierForBaseCurrency = 2f)
+        val secondItemBeforeUpdate =
+            CurrencyListItem(code = "TEST2", multiplierForBaseCurrency = 3f)
+        val thirdItemBeforeUpdate = CurrencyListItem(code = "TEST3", multiplierForBaseCurrency = 4f)
+        val firstItemAfterUpdate = CurrencyListItem(code = "TEST1", multiplierForBaseCurrency = 5f)
+        val secondItemAfterUpdate = CurrencyListItem(code = "TEST2", multiplierForBaseCurrency = 6f)
+        val thirdItemAfterUpdate = CurrencyListItem(code = "TEST3", multiplierForBaseCurrency = 7f)
+        val itemsBeforeUpdate =
+            listOf(thirdItemBeforeUpdate, firstItemBeforeUpdate, secondItemBeforeUpdate)
+        val newItems = listOf(firstItemAfterUpdate, secondItemAfterUpdate, thirdItemAfterUpdate)
+        val newItemsAfterReordering =
+            listOf(thirdItemAfterUpdate, firstItemAfterUpdate, secondItemAfterUpdate)
+        val model = CurrencyModel(items = itemsBeforeUpdate)
+        updateSpec
+            .given(model)
+            .whenEvent(DataArrived(newItems))
+            .then(assertThatNext(hasModel(model.copy(items = newItemsAfterReordering))))
+    }
+
+    @Test
+    fun initListItems_whenDataArrived_AndModelIsEmpty() {
         updateSpec
             .given(CurrencyModel())
-            .whenEvent(DataArrived(newModel))
+            .whenEvent(DataArrived(listOf()))
+            .then(
+                assertThatNext<CurrencyModel, CurrencyEffect>(
+                    hasEffects(InitListItems)
+                )
+            )
+    }
+
+    @Test
+    fun updateListItems_whenDataArrived_AndModelIsNotEmpty() {
+        updateSpec
+            .given(CurrencyModel(items = listOf(CurrencyListItem())))
+            .whenEvent(DataArrived(listOf(CurrencyListItem())))
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
                     hasEffects(UpdateListItems)

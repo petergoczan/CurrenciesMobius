@@ -4,6 +4,7 @@ import android.util.Log
 import com.petergoczan.currenciesmobius.di.ActivityScope
 import com.petergoczan.currenciesmobius.mobius.*
 import com.petergoczan.currenciesmobius.mobius.effecthandler.CurrencyEffectHandlers
+import com.petergoczan.currenciesmobius.roundToTwoDecimals
 import com.petergoczan.currenciesmobius.view.MainPageView
 import com.petergoczan.currenciesmobius.view.list.MainPageListRow
 import com.spotify.mobius.Connection
@@ -15,6 +16,7 @@ import com.spotify.mobius.functions.Consumer
 import com.spotify.mobius.rx2.RxMobius
 import com.squareup.picasso.Picasso
 import javax.inject.Inject
+
 
 @ActivityScope
 class MainPagePresenterImpl @Inject constructor(
@@ -52,11 +54,16 @@ class MainPagePresenterImpl @Inject constructor(
         return controller.model
     }
 
+    override fun moveItemToTop(originalItemPosition: Int) {
+        view.notifyItemMovedToTop(originalItemPosition)
+    }
+
     override fun onBindViewAtListPosition(position: Int, row: MainPageListRow) {
         val item: CurrencyListItem = getModel().items[position]
         row.setTitle(item.code)
         row.setSubtitle(item.name)
         row.setImage(picasso, item.imageUrl)
+        row.setRowSelectedListener { eventConsumer.accept(CurrencyEvent.RowSelected(it)) }
         setupRowAmount(position, row, item.multiplierForBaseCurrency)
     }
 
@@ -64,8 +71,12 @@ class MainPagePresenterImpl @Inject constructor(
         return controller.model.items.size
     }
 
+    override fun initList() {
+        view.initList()
+    }
+
     override fun updateList() {
-        view.update()
+        view.updateList()
     }
 
     override fun connect(output: Consumer<CurrencyEvent>): Connection<CurrencyModel> {
@@ -91,15 +102,13 @@ class MainPagePresenterImpl @Inject constructor(
             if (position == 0) {
                 getModel().amountSetByUser
             } else {
-                getModel().amountSetByUser * itemMultiplier
+                (getModel().amountSetByUser * itemMultiplier).roundToTwoDecimals()
             }
         )
-        row.setAmountChangedListener { amount ->
-            if (position == 0) {
-                eventConsumer.accept(
-                    CurrencyEvent.ReferenceCurrencyAmountChanged(amount = amount)
-                )
-            }
+        row.setupAmountChangedListener {
+            eventConsumer.accept(
+                CurrencyEvent.ReferenceCurrencyAmountChanged(amount = it)
+            )
         }
     }
 

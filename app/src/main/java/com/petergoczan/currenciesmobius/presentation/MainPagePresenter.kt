@@ -23,7 +23,11 @@ interface MainPagePresenter : Connectable<CurrencyModel, CurrencyEvent> {
 
     fun getListItemCount(): Int
 
+    fun initList()
+
     fun updateList()
 
     fun getModel(): CurrencyModel
+
+    fun moveItemToTop(originalItemPosition: Int)
 }
