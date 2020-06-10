@@ -15,15 +15,25 @@ class RemoteModelToCurrencyListItemsTransformer @Inject constructor(private val 
         return upstream.map { model ->
             val items = mutableListOf<CurrencyListItem>()
             val rates = model.rates
-            rates::class.memberProperties.forEach {
-                items.add(
-                    CurrencyListItem(
-                        code = it.name,
-                        name = currencyDetailsMapper.getNameByCurrencyCode(it.name),
-                        imageUrl = currencyDetailsMapper.getIconByCurrencyCode(it.name),
-                        multiplierForBaseCurrency = it.getter.call(rates) as Float
-                    )
+            items.add(
+                CurrencyListItem(
+                    code = model.baseCurrency,
+                    name = currencyDetailsMapper.getNameByCurrencyCode(model.baseCurrency),
+                    imageUrl = currencyDetailsMapper.getIconByCurrencyCode(model.baseCurrency),
+                    multiplierForBaseCurrency = 1f
                 )
+            )
+            rates::class.memberProperties.forEach {
+                if (it.name != model.baseCurrency) {
+                    items.add(
+                        CurrencyListItem(
+                            code = it.name,
+                            name = currencyDetailsMapper.getNameByCurrencyCode(it.name),
+                            imageUrl = currencyDetailsMapper.getIconByCurrencyCode(it.name),
+                            multiplierForBaseCurrency = it.getter.call(rates) as Float
+                        )
+                    )
+                }
             }
             items
         }
