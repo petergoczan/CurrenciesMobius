@@ -5,8 +5,9 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.os.Build
 import com.petergoczan.currenciesmobius.mobius.CurrencyEvent
-import com.petergoczan.currenciesmobius.mobius.CurrencyEvent.*
+import com.petergoczan.currenciesmobius.mobius.CurrencyEvent.InternetStateChanged
 import com.spotify.mobius.EventSource
 import com.spotify.mobius.disposables.Disposable
 import com.spotify.mobius.functions.Consumer
@@ -23,7 +24,25 @@ class InternetConnectionEventSource @Inject constructor(private val context: Con
         val connectivityManager =
             context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
+        eventConsumer.accept(InternetStateChanged(isConnected(connectivityManager)))
         return Disposable { connectivityManager.unregisterNetworkCallback(networkCallback) }
+    }
+
+    private fun isConnected(connectivityManager: ConnectivityManager): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val networkCapabilities = connectivityManager.activeNetwork ?: return false
+            val activeNetwork =
+                connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+            when {
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
+        } else {
+            val activeNetworkInfo = connectivityManager.activeNetworkInfo;
+            return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting
+        }
     }
 
     private val networkRequest =
@@ -31,6 +50,7 @@ class InternetConnectionEventSource @Inject constructor(private val context: Con
             .Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
             .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
             .build()
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
@@ -39,7 +59,7 @@ class InternetConnectionEventSource @Inject constructor(private val context: Con
         }
 
         override fun onLost(network: Network) {
-           eventConsumer.accept(InternetStateChanged(false))
+            eventConsumer.accept(InternetStateChanged(false))
         }
 
         override fun onUnavailable() {
