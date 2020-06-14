@@ -41,7 +41,8 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
 
     override fun notifyItemMovedToTop(originalItemPosition: Int) {
         adapter.notifyItemMoved(originalItemPosition, 0)
-        layoutManager.scrollToPosition(0);
+        layoutManager.scrollToPosition(0)
+        adapter.notifyItemChanged(0, false)
     }
 
     override fun hideNoInternetConnectionPage() {
