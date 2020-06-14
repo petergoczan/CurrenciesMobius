@@ -48,7 +48,7 @@ class CurrencyLogicTest {
             .whenEvent(InternetStateChanged(false))
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
-                    hasEffects(ShowNoInternetPage)
+                    hasEffects(HandleConnectionStateChanged)
                 )
             )
     }

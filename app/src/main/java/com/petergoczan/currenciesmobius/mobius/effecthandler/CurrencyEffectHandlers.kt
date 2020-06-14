@@ -37,5 +37,10 @@ class CurrencyEffectHandlers @Inject constructor(
                 { presenter.moveItemToTop(it.itemPosition) },
                 schedulersProvider.ui()
             )
+            .addConsumer<CurrencyEffect.HandleConnectionStateChanged>(
+                CurrencyEffect.HandleConnectionStateChanged::class.java,
+                { presenter.handleConnectionStateChanged() },
+                schedulersProvider.ui()
+            )
             .build()
 }

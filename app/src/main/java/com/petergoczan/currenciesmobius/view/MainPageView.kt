@@ -11,4 +11,8 @@ interface MainPageView {
     fun updateList()
 
     fun notifyItemMovedToTop(originalItemPosition: Int)
+
+    fun hideNoInternetConnectionPage()
+
+    fun showNoInternetConnectionPage()
 }

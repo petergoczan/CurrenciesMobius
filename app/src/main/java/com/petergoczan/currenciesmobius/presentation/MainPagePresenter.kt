@@ -30,4 +30,6 @@ interface MainPagePresenter : Connectable<CurrencyModel, CurrencyEvent> {
     fun getModel(): CurrencyModel
 
     fun moveItemToTop(originalItemPosition: Int)
+
+    fun handleConnectionStateChanged()
 }

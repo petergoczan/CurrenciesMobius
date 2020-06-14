@@ -6,8 +6,7 @@ import com.petergoczan.currenciesmobius.data.getReorderedItemsForItemClick
 import com.petergoczan.currenciesmobius.mobius.CurrencyEffect.*
 import com.petergoczan.currenciesmobius.mobius.CurrencyEvent.*
 import com.spotify.mobius.Next
-import com.spotify.mobius.Next.dispatch
-import com.spotify.mobius.Next.next
+import com.spotify.mobius.Next.*
 import kotlinx.android.parcel.Parcelize
 
 fun update(
@@ -17,7 +16,7 @@ fun update(
     when (event) {
         is InternetStateChanged -> next(
             model.copy(isOnline = event.isConnected),
-            setOf(if (event.isConnected) HideNoInternetPage else ShowNoInternetPage)
+            setOf(HandleConnectionStateChanged)
         )
         is RowSelected -> {
             val reorderedItems = getReorderedItemsForItemClick(model.items, event.itemPosition)
@@ -35,7 +34,13 @@ fun update(
                 model.copy(amountSetByUser = event.amount),
                 setOf(UpdateListItems)
             )
-        is RefreshTimePassed -> dispatch(setOf(RequestData(model.baseCurrencyCode)))
+        is RefreshTimePassed -> {
+            if (model.isOnline) {
+                next(model, setOf(RequestData(model.baseCurrencyCode) as CurrencyEffect))
+            } else {
+                noChange()
+            }
+        }
         is DataArrived -> {
             val effect = if (model.items.isEmpty()) {
                 InitListItems
@@ -58,7 +63,7 @@ fun update(
 
 data class CurrencyModel(
     val baseCurrencyCode: String = DEFAULT_CURRENCY_CODE,
-    val isOnline: Boolean = true,
+    val isOnline: Boolean = false,
     val amountSetByUser: Double = DEFAULT_AMOUNT,
     val items: List<CurrencyListItem> = listOf()
 )
@@ -125,8 +130,7 @@ sealed class CurrencyEffect {
     object UpdateListItems : CurrencyEffect()
     object ShowCommunicationErrorPage : CurrencyEffect()
     data class MoveItemOnTop(val itemPosition: Int) : CurrencyEffect()
-    object ShowNoInternetPage : CurrencyEffect()
-    object HideNoInternetPage : CurrencyEffect()
+    object HandleConnectionStateChanged : CurrencyEffect()
 }
 
 const val DEFAULT_CURRENCY_CODE = "EUR"

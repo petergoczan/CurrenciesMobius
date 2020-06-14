@@ -1,6 +1,7 @@
-package com.petergoczan.currenciesmobius.mobius
+package com.petergoczan.currenciesmobius.mobius.eventsource
 
 import com.petergoczan.currenciesmobius.di.ActivityScope
+import com.petergoczan.currenciesmobius.mobius.CurrencyEvent
 import com.petergoczan.currenciesmobius.scheduler.SchedulersProvider
 import com.spotify.mobius.EventSource
 import com.spotify.mobius.disposables.Disposable

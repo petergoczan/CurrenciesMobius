@@ -4,6 +4,8 @@ import android.util.Log
 import com.petergoczan.currenciesmobius.di.ActivityScope
 import com.petergoczan.currenciesmobius.mobius.*
 import com.petergoczan.currenciesmobius.mobius.effecthandler.CurrencyEffectHandlers
+import com.petergoczan.currenciesmobius.mobius.eventsource.InternetConnectionEventSource
+import com.petergoczan.currenciesmobius.mobius.eventsource.TimerEventSource
 import com.petergoczan.currenciesmobius.roundToTwoDecimals
 import com.petergoczan.currenciesmobius.view.MainPageView
 import com.petergoczan.currenciesmobius.view.list.MainPageListRow
@@ -22,6 +24,7 @@ import javax.inject.Inject
 class MainPagePresenterImpl @Inject constructor(
     private val effectHandlers: CurrencyEffectHandlers,
     private val timerEventSource: TimerEventSource,
+    private val internetConnectionEventSource: InternetConnectionEventSource,
     private val picasso: Picasso
 ) : MainPagePresenter {
 
@@ -79,6 +82,14 @@ class MainPagePresenterImpl @Inject constructor(
         view.updateList()
     }
 
+    override fun handleConnectionStateChanged() {
+        if (getModel().isOnline) {
+            view.hideNoInternetConnectionPage()
+        } else {
+            view.showNoInternetConnectionPage()
+        }
+    }
+
     override fun connect(output: Consumer<CurrencyEvent>): Connection<CurrencyModel> {
 
         eventConsumer = output
@@ -120,6 +131,6 @@ class MainPagePresenterImpl @Inject constructor(
                 event
             )
         }, effectHandlers.createEffectHandlers(this))
-            .eventSource(timerEventSource)
+            .eventSources(timerEventSource, internetConnectionEventSource)
             .logger(AndroidLogger.tag("CurrencyMobius"))
 }
