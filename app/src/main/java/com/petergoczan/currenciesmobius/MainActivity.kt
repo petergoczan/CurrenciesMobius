@@ -39,8 +39,8 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
         saveModel(presenter.getModel(), outState)
+        super.onSaveInstanceState(outState)
     }
 
     private fun initPresenter(savedInstanceState: Bundle?) {
