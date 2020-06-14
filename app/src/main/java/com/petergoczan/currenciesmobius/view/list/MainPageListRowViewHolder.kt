@@ -48,13 +48,13 @@ class MainPageListRowViewHolder(root: View) : RecyclerView.ViewHolder(root),
     override fun setRowSelectedListener(rowSelected: (Int) -> Unit) {
         itemView.setOnClickListener {
             rowSelected.invoke(layoutPosition)
-            amount.onFocusChangeListener = null
             amount.requestFocus()
         }
-        amount.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                rowSelected.invoke(layoutPosition)
+        amount.setOnTouchListener { _, _ ->
+            if (layoutPosition != 0) {
+                itemView.performClick()
             }
+            false
         }
     }
 
