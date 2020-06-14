@@ -6,6 +6,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import com.petergoczan.currenciesmobius.mobius.CurrencyEvent
+import com.petergoczan.currenciesmobius.mobius.CurrencyEvent.*
 import com.spotify.mobius.EventSource
 import com.spotify.mobius.disposables.Disposable
 import com.spotify.mobius.functions.Consumer
@@ -34,19 +35,19 @@ class InternetConnectionEventSource @Inject constructor(private val context: Con
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onLosing(network: Network, maxMsToLive: Int) {
-            eventConsumer.accept(CurrencyEvent.InternetStateChanged(false))
+            eventConsumer.accept(InternetStateChanged(false))
         }
 
         override fun onLost(network: Network) {
-           eventConsumer.accept(CurrencyEvent.InternetStateChanged(false))
+           eventConsumer.accept(InternetStateChanged(false))
         }
 
         override fun onUnavailable() {
-            eventConsumer.accept(CurrencyEvent.InternetStateChanged(false))
+            eventConsumer.accept(InternetStateChanged(false))
         }
 
         override fun onAvailable(network: Network) {
-            eventConsumer.accept(CurrencyEvent.InternetStateChanged(true))
+            eventConsumer.accept(InternetStateChanged(true))
         }
     }
 

@@ -2,6 +2,7 @@ package com.petergoczan.currenciesmobius.mobius.effecthandler
 
 import com.petergoczan.currenciesmobius.di.ActivityScope
 import com.petergoczan.currenciesmobius.mobius.CurrencyEffect
+import com.petergoczan.currenciesmobius.mobius.CurrencyEffect.*
 import com.petergoczan.currenciesmobius.mobius.CurrencyEvent
 import com.petergoczan.currenciesmobius.presentation.MainPagePresenter
 import com.petergoczan.currenciesmobius.scheduler.SchedulersProvider
@@ -18,32 +19,32 @@ class CurrencyEffectHandlers @Inject constructor(
     fun createEffectHandlers(presenter: MainPagePresenter): ObservableTransformer<CurrencyEffect, CurrencyEvent> =
         RxMobius
             .subtypeEffectHandler<CurrencyEffect, CurrencyEvent>()
-            .addTransformer<CurrencyEffect.RequestData>(
-                CurrencyEffect.RequestData::class.java,
+            .addTransformer<RequestData>(
+                RequestData::class.java,
                 requestDataEffectHandler
             )
-            .addConsumer<CurrencyEffect.InitListItems>(
-                CurrencyEffect.InitListItems::class.java,
+            .addConsumer<InitListItems>(
+                InitListItems::class.java,
                 { presenter.initList() },
                 schedulersProvider.ui()
             )
-            .addConsumer<CurrencyEffect.UpdateListItems>(
-                CurrencyEffect.UpdateListItems::class.java,
+            .addConsumer<UpdateListItems>(
+                UpdateListItems::class.java,
                 { presenter.updateList() },
                 schedulersProvider.ui()
             )
-            .addConsumer<CurrencyEffect.MoveItemOnTop>(
-                CurrencyEffect.MoveItemOnTop::class.java,
+            .addConsumer<MoveItemOnTop>(
+                MoveItemOnTop::class.java,
                 { presenter.moveItemToTop(it.itemPosition) },
                 schedulersProvider.ui()
             )
-            .addConsumer<CurrencyEffect.HandleConnectionStateChanged>(
-                CurrencyEffect.HandleConnectionStateChanged::class.java,
+            .addConsumer<HandleConnectionStateChanged>(
+                HandleConnectionStateChanged::class.java,
                 { presenter.handleConnectionStateChanged() },
                 schedulersProvider.ui()
             )
-            .addConsumer<CurrencyEffect.HandleCommunicationError>(
-                CurrencyEffect.HandleCommunicationError::class.java,
+            .addConsumer<HandleCommunicationError>(
+                HandleCommunicationError::class.java,
                 { presenter.handleCommunicationError() },
                 schedulersProvider.ui()
             )

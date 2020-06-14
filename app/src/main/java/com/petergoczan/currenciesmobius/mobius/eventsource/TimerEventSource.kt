@@ -2,6 +2,7 @@ package com.petergoczan.currenciesmobius.mobius.eventsource
 
 import com.petergoczan.currenciesmobius.di.ActivityScope
 import com.petergoczan.currenciesmobius.mobius.CurrencyEvent
+import com.petergoczan.currenciesmobius.mobius.CurrencyEvent.RefreshTimePassed
 import com.petergoczan.currenciesmobius.scheduler.SchedulersProvider
 import com.spotify.mobius.EventSource
 import com.spotify.mobius.disposables.Disposable
@@ -19,7 +20,7 @@ class TimerEventSource @Inject constructor(private val schedulersProvider: Sched
         val timerDisposable = Observable
             .interval(0, 1, TimeUnit.SECONDS)
             .subscribeOn(schedulersProvider.io())
-            .subscribe { eventConsumer.accept(CurrencyEvent.RefreshTimePassed) }
+            .subscribe { eventConsumer.accept(RefreshTimePassed) }
 
         return Disposable {
             timerDisposable.dispose()

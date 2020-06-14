@@ -3,6 +3,8 @@ package com.petergoczan.currenciesmobius.presentation
 import android.util.Log
 import com.petergoczan.currenciesmobius.di.ActivityScope
 import com.petergoczan.currenciesmobius.mobius.*
+import com.petergoczan.currenciesmobius.mobius.CurrencyEvent.ReferenceCurrencyAmountChanged
+import com.petergoczan.currenciesmobius.mobius.CurrencyEvent.RowSelected
 import com.petergoczan.currenciesmobius.mobius.effecthandler.CurrencyEffectHandlers
 import com.petergoczan.currenciesmobius.mobius.eventsource.InternetConnectionEventSource
 import com.petergoczan.currenciesmobius.mobius.eventsource.TimerEventSource
@@ -66,7 +68,7 @@ class MainPagePresenterImpl @Inject constructor(
         row.setTitle(item.code)
         row.setSubtitle(item.name)
         row.setImage(picasso, item.imageUrl)
-        row.setRowSelectedListener { eventConsumer.accept(CurrencyEvent.RowSelected(it)) }
+        row.setRowSelectedListener { eventConsumer.accept(RowSelected(it)) }
         setupRowAmount(position, row, item.multiplierForBaseCurrency)
     }
 
@@ -91,7 +93,7 @@ class MainPagePresenterImpl @Inject constructor(
     }
 
     override fun handleCommunicationError() {
-        Log.d("CurrencyMobius","CommunicaiontError")
+        Log.d("CurrencyMobius", "CommunicaiontError")
     }
 
     override fun connect(output: Consumer<CurrencyEvent>): Connection<CurrencyModel> {
@@ -122,7 +124,7 @@ class MainPagePresenterImpl @Inject constructor(
         )
         row.setupAmountChangedListener {
             eventConsumer.accept(
-                CurrencyEvent.ReferenceCurrencyAmountChanged(amount = it)
+                ReferenceCurrencyAmountChanged(amount = it)
             )
         }
     }
