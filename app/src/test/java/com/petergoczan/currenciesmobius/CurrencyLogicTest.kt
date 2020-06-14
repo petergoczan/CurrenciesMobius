@@ -3,8 +3,7 @@ package com.petergoczan.currenciesmobius
 import com.petergoczan.currenciesmobius.mobius.*
 import com.petergoczan.currenciesmobius.mobius.CurrencyEffect.*
 import com.petergoczan.currenciesmobius.mobius.CurrencyEvent.*
-import com.spotify.mobius.test.NextMatchers.hasEffects
-import com.spotify.mobius.test.NextMatchers.hasModel
+import com.spotify.mobius.test.NextMatchers.*
 import com.spotify.mobius.test.UpdateSpec
 import com.spotify.mobius.test.UpdateSpec.assertThatNext
 import org.junit.Before
@@ -20,27 +19,21 @@ class CurrencyLogicTest {
     }
 
     @Test
-    fun updateOnline_whenInternetStateChangedToAvailable() {
-        val model =
-            CurrencyModel(isOnline = false)
+    fun updateOnline_whenInternetStateChangedToAvailable_andTriggerConnectionChangedEffect() {
+        val model = CurrencyModel(isOnline = false)
         updateSpec
             .given(model)
             .whenEvent(InternetStateChanged(true))
-            .then(assertThatNext(hasModel(model.copy(isOnline = true))))
+            .then(
+                assertThatNext<CurrencyModel, CurrencyEffect>(
+                    hasModel(model.copy(isOnline = true)),
+                    hasEffects(HandleConnectionStateChanged)
+                )
+            )
     }
 
     @Test
-    fun updateOnline_whenInternetStateChangedToUnavailable() {
-        val model =
-            CurrencyModel(isOnline = true)
-        updateSpec
-            .given(model)
-            .whenEvent(InternetStateChanged(false))
-            .then(assertThatNext(hasModel(model.copy(isOnline = false))))
-    }
-
-    @Test
-    fun showNoInternetPage_whenInternetStateChangedToUnavailable() {
+    fun updateOnline_whenInternetStateChangedToUnavailable_andTriggerConnectionChangedEffect() {
         val model =
             CurrencyModel(isOnline = true)
         updateSpec
@@ -48,6 +41,7 @@ class CurrencyLogicTest {
             .whenEvent(InternetStateChanged(false))
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
+                    hasModel(model.copy(isOnline = false)),
                     hasEffects(HandleConnectionStateChanged)
                 )
             )
@@ -62,7 +56,7 @@ class CurrencyLogicTest {
             .whenEvent(InternetStateChanged(true))
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
-                    hasEffects(HideNoInternetPage)
+                    hasEffects(HandleConnectionStateChanged)
                 )
             )
     }
@@ -110,9 +104,9 @@ class CurrencyLogicTest {
     }
 
     @Test
-    fun requestDataForDefaultCurrency_whenRefreshTimePassed_AndNothingIsSelectedYet() {
+    fun requestDataForDefaultCurrency_whenRefreshTimePassed_andNothingIsSelectedYet_andNotOnline() {
         updateSpec
-            .given(CurrencyModel())
+            .given(CurrencyModel(isOnline = true))
             .whenEvent(RefreshTimePassed)
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
@@ -122,15 +116,31 @@ class CurrencyLogicTest {
     }
 
     @Test
-    fun requestDataWithCurrentSelection_whenRefreshTimePassed() {
+    fun requestDataWithCurrentSelection_whenRefreshTimePassed_andOnline() {
         val selectedItemCode = "TEST1"
-        val model = CurrencyModel(baseCurrencyCode = selectedItemCode)
+        val model = CurrencyModel(
+            baseCurrencyCode = selectedItemCode,
+            isOnline = true
+        )
         updateSpec
             .given(model)
             .whenEvent(RefreshTimePassed)
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
                     hasEffects(RequestData(selectedItemCode))
+                )
+            )
+    }
+
+    @Test
+    fun doNotToAnything_whenRefreshTimePassed_andNotOnline() {
+        val model = CurrencyModel(isOnline = false)
+        updateSpec
+            .given(model)
+            .whenEvent(RefreshTimePassed)
+            .then(
+                assertThatNext<CurrencyModel, CurrencyEffect>(
+                    hasNoEffects()
                 )
             )
     }
@@ -201,7 +211,7 @@ class CurrencyLogicTest {
             .whenEvent(CommunicationError)
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
-                    hasEffects(ShowCommunicationErrorPage)
+                    hasEffects(HandleCommunicationError)
                 )
             )
     }
