@@ -119,7 +119,7 @@ class MainPagePresenterImpl @Inject constructor(
     private fun setupRowAmount(position: Int, row: MainPageListRow, itemMultiplier: Float) {
         row.setAmount(
             if (position == 0) {
-                getModel().amountSetByUser
+                getModel().amountSetByUser.roundToTwoDecimals()
             } else {
                 (getModel().amountSetByUser * itemMultiplier).roundToTwoDecimals()
             }
