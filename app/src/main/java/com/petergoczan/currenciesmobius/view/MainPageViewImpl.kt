@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.petergoczan.currenciesmobius.di.ActivityScope
 import com.petergoczan.currenciesmobius.view.list.MainPageListAdapter
 import kotlinx.android.synthetic.main.activity_main.view.*
+import kotlinx.android.synthetic.main.no_internet_page.view.*
 import javax.inject.Inject
 
 @ActivityScope
@@ -14,6 +15,7 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var noInternetPage: View
 
     override fun bind(rootView: View) {
         recyclerView = rootView.recycler_view
@@ -21,6 +23,7 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
         layoutManager = LinearLayoutManager(recyclerView.context)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
+        noInternetPage = rootView.no_internet_page
     }
 
     override fun initList() {
@@ -39,10 +42,10 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
     }
 
     override fun hideNoInternetConnectionPage() {
-        //TODO
+        noInternetPage.visibility = View.GONE
     }
 
     override fun showNoInternetConnectionPage() {
-        //TODO
+        noInternetPage.visibility = View.VISIBLE
     }
 }
