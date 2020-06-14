@@ -33,12 +33,10 @@ class InternetConnectionEventSource @Inject constructor(private val context: Con
             val networkCapabilities = connectivityManager.activeNetwork ?: return false
             val activeNetwork =
                 connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
-            when {
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-                else -> false
-            }
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+
         } else {
             val activeNetworkInfo = connectivityManager.activeNetworkInfo;
             return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting
@@ -54,9 +52,6 @@ class InternetConnectionEventSource @Inject constructor(private val context: Con
             .build()
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
-        override fun onLosing(network: Network, maxMsToLive: Int) {
-            eventConsumer.accept(InternetStateChanged(false))
-        }
 
         override fun onLost(network: Network) {
             eventConsumer.accept(InternetStateChanged(false))
