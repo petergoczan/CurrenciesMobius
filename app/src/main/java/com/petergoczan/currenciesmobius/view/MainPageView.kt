@@ -19,4 +19,6 @@ interface MainPageView {
     fun showCommunicationErrorOverlay()
 
     fun hideCommunicationErrorOverlay()
+
+    fun hideProgressBar()
 }

@@ -79,11 +79,13 @@ class MainPagePresenterImpl @Inject constructor(
     override fun initList() {
         view.hideCommunicationErrorOverlay()
         view.initList()
+        view.hideProgressBar()
     }
 
     override fun updateList() {
         view.hideCommunicationErrorOverlay()
         view.updateList()
+        view.hideProgressBar()
     }
 
     override fun handleConnectionStateChanged() {

@@ -31,6 +31,8 @@
 
     </LinearLayout>
 
+    <include layout="@layout/progress_bar" />
+
     <include layout="@layout/grey_transparent_overlay" />
 
     <include layout="@layout/no_internet_page" />

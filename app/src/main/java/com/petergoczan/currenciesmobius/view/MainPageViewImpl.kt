@@ -8,6 +8,7 @@ import com.petergoczan.currenciesmobius.view.list.MainPageListAdapter
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.grey_transparent_overlay.view.*
 import kotlinx.android.synthetic.main.no_internet_page.view.*
+import kotlinx.android.synthetic.main.progress_bar.view.*
 import javax.inject.Inject
 
 @ActivityScope
@@ -18,6 +19,7 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var noInternetPage: View
     private lateinit var communicationErrorOverlay: View
+    private lateinit var progressBar: View
 
     override fun bind(rootView: View) {
         recyclerView = rootView.recycler_view
@@ -27,6 +29,7 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
         recyclerView.adapter = adapter
         noInternetPage = rootView.no_internet_page
         communicationErrorOverlay = rootView.grey_transparent_overlay
+        progressBar = rootView.progress_bar
     }
 
     override fun initList() {
@@ -59,5 +62,9 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
 
     override fun hideCommunicationErrorOverlay() {
         communicationErrorOverlay.visibility = View.GONE
+    }
+
+    override fun hideProgressBar() {
+        progressBar.visibility = View.GONE
     }
 }
