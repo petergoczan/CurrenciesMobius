@@ -15,4 +15,8 @@ interface MainPageView {
     fun hideNoInternetConnectionPage()
 
     fun showNoInternetConnectionPage()
+
+    fun showCommunicationErrorOverlay()
+
+    fun hideCommunicationErrorOverlay()
 }

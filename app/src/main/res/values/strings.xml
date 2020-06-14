@@ -2,4 +2,5 @@
     <string name="app_name">CurrenciesMobius</string>
     <string name="title">Rates</string>
     <string name="no_internet_available">No internet available!</string>
+    <string name="something_went_wrong">Something went wrong!\nPlease stand by...</string>
 </resources>

@@ -77,10 +77,12 @@ class MainPagePresenterImpl @Inject constructor(
     }
 
     override fun initList() {
+        view.hideCommunicationErrorOverlay()
         view.initList()
     }
 
     override fun updateList() {
+        view.hideCommunicationErrorOverlay()
         view.updateList()
     }
 
@@ -93,7 +95,7 @@ class MainPagePresenterImpl @Inject constructor(
     }
 
     override fun handleCommunicationError() {
-        Log.d("CurrencyMobius", "CommunicaiontError")
+        view.showCommunicationErrorOverlay()
     }
 
     override fun connect(output: Consumer<CurrencyEvent>): Connection<CurrencyModel> {
@@ -102,12 +104,12 @@ class MainPagePresenterImpl @Inject constructor(
 
         return object : Connection<CurrencyModel> {
             override fun accept(value: CurrencyModel) {
-                Log.d("CurrencyMobius", "accept() called in MainPagePresenter / connect()")
+                Log.d(LOG_TAG, "accept() called in MainPagePresenter / connect()")
                 //TODO render model
             }
 
             override fun dispose() {
-                Log.d("CurrencyMobius", "dispose() called in MainPagePresenter / connect()")
+                Log.d(LOG_TAG, "dispose() called in MainPagePresenter / connect()")
                 //TODO dispose of whatever needs to be disposed
             }
 
@@ -138,5 +140,7 @@ class MainPagePresenterImpl @Inject constructor(
             )
         }, effectHandlers.createEffectHandlers(this))
             .eventSources(timerEventSource, internetConnectionEventSource)
-            .logger(AndroidLogger.tag("CurrencyMobius"))
+            .logger(AndroidLogger.tag(LOG_TAG))
 }
+
+private const val LOG_TAG = "CurrencyMobius"

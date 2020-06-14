@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/grey_transparent_overlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey_transparent"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center"
+    android:text="@string/something_went_wrong"
+    android:textSize="@dimen/text_size_big"
+    android:textColor="@color/grey_transparent"
+    android:textStyle="bold"
+    android:visibility="gone" />

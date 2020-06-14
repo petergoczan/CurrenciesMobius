@@ -18,6 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/no_internet_image"
         android:layout_marginTop="@dimen/medium"
+        android:textSize="@dimen/text_size_big"
         android:gravity="center"
         android:text="@string/no_internet_available" />
 

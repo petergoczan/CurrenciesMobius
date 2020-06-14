@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.petergoczan.currenciesmobius.di.ActivityScope
 import com.petergoczan.currenciesmobius.view.list.MainPageListAdapter
 import kotlinx.android.synthetic.main.activity_main.view.*
+import kotlinx.android.synthetic.main.grey_transparent_overlay.view.*
 import kotlinx.android.synthetic.main.no_internet_page.view.*
 import javax.inject.Inject
 
@@ -16,6 +17,7 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
     private lateinit var recyclerView: RecyclerView
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var noInternetPage: View
+    private lateinit var communicationErrorOverlay: View
 
     override fun bind(rootView: View) {
         recyclerView = rootView.recycler_view
@@ -24,6 +26,7 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
         noInternetPage = rootView.no_internet_page
+        communicationErrorOverlay = rootView.grey_transparent_overlay
     }
 
     override fun initList() {
@@ -47,5 +50,13 @@ class MainPageViewImpl @Inject constructor(private val adapter: MainPageListAdap
 
     override fun showNoInternetConnectionPage() {
         noInternetPage.visibility = View.VISIBLE
+    }
+
+    override fun showCommunicationErrorOverlay() {
+        communicationErrorOverlay.visibility = View.VISIBLE
+    }
+
+    override fun hideCommunicationErrorOverlay() {
+        communicationErrorOverlay.visibility = View.GONE
     }
 }
