@@ -58,7 +58,7 @@ fun update(
                 setOf(effect)
             )
         }
-        is CommunicationError -> dispatch(setOf(ShowCommunicationErrorPage))
+        is CommunicationError -> dispatch(setOf(HandleCommunicationError))
     }
 
 data class CurrencyModel(
@@ -128,7 +128,7 @@ sealed class CurrencyEffect {
     data class RequestData(val baseCurrencyCode: String) : CurrencyEffect()
     object InitListItems : CurrencyEffect()
     object UpdateListItems : CurrencyEffect()
-    object ShowCommunicationErrorPage : CurrencyEffect()
+    object HandleCommunicationError : CurrencyEffect()
     data class MoveItemOnTop(val itemPosition: Int) : CurrencyEffect()
     object HandleConnectionStateChanged : CurrencyEffect()
 }

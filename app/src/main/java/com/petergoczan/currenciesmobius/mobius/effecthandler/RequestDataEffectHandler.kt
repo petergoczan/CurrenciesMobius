@@ -26,10 +26,8 @@ class RequestDataEffectHandler @Inject constructor(
                 .getCurrencies(it.baseCurrencyCode)
                 .subscribeOn(schedulersProvider.io())
                 .compose(remoteModelModelToCurrencyListItemsTransformer)
-                .map { model ->
-                    Log.d("CurrencyMobius", "data arrived: $model")
-                    CurrencyEvent.DataArrived(model)
-                }
+                .map { model -> CurrencyEvent.DataArrived(model) as CurrencyEvent }
+                .onErrorReturn { CurrencyEvent.CommunicationError }
         }
     }
 }

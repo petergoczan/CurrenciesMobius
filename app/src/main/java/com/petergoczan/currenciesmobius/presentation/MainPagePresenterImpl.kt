@@ -90,6 +90,10 @@ class MainPagePresenterImpl @Inject constructor(
         }
     }
 
+    override fun handleCommunicationError() {
+        Log.d("CurrencyMobius","CommunicaiontError")
+    }
+
     override fun connect(output: Consumer<CurrencyEvent>): Connection<CurrencyModel> {
 
         eventConsumer = output

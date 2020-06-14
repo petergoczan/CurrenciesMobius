@@ -42,5 +42,10 @@ class CurrencyEffectHandlers @Inject constructor(
                 { presenter.handleConnectionStateChanged() },
                 schedulersProvider.ui()
             )
+            .addConsumer<CurrencyEffect.HandleCommunicationError>(
+                CurrencyEffect.HandleCommunicationError::class.java,
+                { presenter.handleCommunicationError() },
+                schedulersProvider.ui()
+            )
             .build()
 }
