@@ -18,17 +18,22 @@ fun update(
             model.copy(isOnline = event.isConnected),
             setOf(HandleConnectionStateChanged)
         )
-        is RowSelected -> {
-            val reorderedItems = getReorderedItemsForItemClick(model.items, event.itemPosition)
-            next(
-                model.copy(
-                    items = reorderedItems,
-                    amountSetByUser = model.amountSetByUser * reorderedItems[0].multiplierForBaseCurrency,
-                    baseCurrencyCode = reorderedItems[0].code
-                ),
-                setOf(MoveItemOnTop(event.itemPosition))
-            )
-        }
+        is RowSelected ->
+            if (model.dataOutdatedFromItemClicked) {
+                noChange()
+            } else {
+                val reorderedItems = getReorderedItemsForItemClick(model.items, event.itemPosition)
+                next(
+                    model.copy(
+                        items = reorderedItems,
+                        amountSetByUser = model.amountSetByUser * reorderedItems[0].multiplierForBaseCurrency,
+                        baseCurrencyCode = reorderedItems[0].code,
+                        dataOutdatedFromItemClicked = true
+                    ),
+                    setOf(MoveItemOnTop(event.itemPosition) as CurrencyEffect)
+                )
+            }
+
         is ReferenceCurrencyAmountChanged ->
             next(
                 model.copy(amountSetByUser = event.amount),
@@ -53,7 +58,8 @@ fun update(
                         getReorderedItemsByExistingList(model, event.items)
                     } else {
                         event.items
-                    }
+                    },
+                    dataOutdatedFromItemClicked = false
                 ),
                 setOf(effect)
             )
@@ -65,7 +71,8 @@ data class CurrencyModel(
     val baseCurrencyCode: String = DEFAULT_CURRENCY_CODE,
     val isOnline: Boolean = false,
     val amountSetByUser: Double = DEFAULT_AMOUNT,
-    val items: List<CurrencyListItem> = listOf()
+    val items: List<CurrencyListItem> = listOf(),
+    val dataOutdatedFromItemClicked: Boolean = true
 )
 
 @Parcelize
@@ -73,7 +80,7 @@ data class CurrencyListItem(
     val imageUrl: String = "",
     val code: String = "",
     val name: String = "",
-    val multiplierForBaseCurrency: Float = 0F
+    var multiplierForBaseCurrency: Float = 0F
 ) : Parcelable
 
 data class RemoteCurrenciesModel(

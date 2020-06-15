@@ -69,7 +69,11 @@ class CurrencyLogicTest {
         val thirdItem = CurrencyListItem(code = "TEST3", multiplierForBaseCurrency = 4f)
         val itemsBeforeUpdate = listOf(firstItem, secondItem, thirdItem)
         val itemsAfterUpdate = listOf(thirdItem, firstItem, secondItem)
-        val model = CurrencyModel(items = itemsBeforeUpdate, amountSetByUser = 2.0)
+        val model = CurrencyModel(
+            items = itemsBeforeUpdate,
+            amountSetByUser = 2.0,
+            dataOutdatedFromItemClicked = false
+        )
         updateSpec
             .given(model)
             .whenEvent(RowSelected(selectedItemPosition))
@@ -79,11 +83,31 @@ class CurrencyLogicTest {
                         model.copy(
                             items = itemsAfterUpdate,
                             baseCurrencyCode = "TEST3",
-                            amountSetByUser = 8.0
+                            amountSetByUser = 8.0,
+                            dataOutdatedFromItemClicked = true
                         )
                     ),
                     hasEffects(MoveItemOnTop(selectedItemPosition))
 
+                )
+            )
+    }
+
+    @Test
+    fun doNotDoAnything_whenRowSelected_andDataOutdated() {
+        val selectedItemPosition = 1
+        val firstItem = CurrencyListItem(code = "TEST1", multiplierForBaseCurrency = 2f)
+        val secondItem = CurrencyListItem(code = "TEST2", multiplierForBaseCurrency = 3f)
+        val items = listOf(firstItem, secondItem)
+        val model =
+            CurrencyModel(items = items, amountSetByUser = 2.0, dataOutdatedFromItemClicked = true)
+        updateSpec
+            .given(model)
+            .whenEvent(RowSelected(selectedItemPosition))
+            .then(
+                assertThatNext<CurrencyModel, CurrencyEffect>(
+                    hasNoModel(),
+                    hasNoEffects()
                 )
             )
     }
@@ -140,6 +164,7 @@ class CurrencyLogicTest {
             .whenEvent(RefreshTimePassed)
             .then(
                 assertThatNext<CurrencyModel, CurrencyEffect>(
+                    hasNoModel(),
                     hasNoEffects()
                 )
             )
@@ -155,7 +180,16 @@ class CurrencyLogicTest {
         updateSpec
             .given(model)
             .whenEvent(DataArrived(newItems))
-            .then(assertThatNext(hasModel(model.copy(items = newItems))))
+            .then(
+                assertThatNext(
+                    hasModel(
+                        model.copy(
+                            items = newItems,
+                            dataOutdatedFromItemClicked = false
+                        )
+                    )
+                )
+            )
     }
 
     @Test
@@ -172,7 +206,7 @@ class CurrencyLogicTest {
         val newItems = listOf(firstItemAfterUpdate, secondItemAfterUpdate, thirdItemAfterUpdate)
         val newItemsAfterReordering =
             listOf(thirdItemAfterUpdate, firstItemAfterUpdate, secondItemAfterUpdate)
-        val model = CurrencyModel(items = itemsBeforeUpdate)
+        val model = CurrencyModel(items = itemsBeforeUpdate, dataOutdatedFromItemClicked = false)
         updateSpec
             .given(model)
             .whenEvent(DataArrived(newItems))
